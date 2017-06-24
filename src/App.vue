@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <punch-cards></punch-cards>
+    <route-drawer></route-drawer>
   </div>
 </template>
 
@@ -9,8 +9,8 @@ import Hello from './components/Hello'
 import NonVueLineChart from './components/NonVueLineChart'
 import VueLineChart from './components/VueLineChart'
 import CountByTimePlot from './components/CountByTimePlot'
-//import ResponsiveAreaChart from './components/ResponsiveAreaChart'
 import PunchCards from './components/Punchcards'
+import RouteDrawer from './components/RouteDrawer'
 
 export default {
   name: 'app',
@@ -20,6 +20,7 @@ export default {
     VueLineChart,
     CountByTimePlot,
     PunchCards,
+    RouteDrawer
   }
 }
 </script>
