@@ -1,7 +1,18 @@
 <template>
-  <div class="root">
-    <svg weight="500" height="500">
-    </svg>
+  <div class="root container-fluid">
+    <div class="row">
+      <div class="col-sm-3 left-panel">
+        <div class="route_selection">
+          
+        </div>
+      </div>
+      <div class="col-sm-9 right-panel">
+        <div class="row route-plot">
+          <svg>
+          </svg>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -15,46 +26,50 @@ export default {
     return {
       ROAD: [],
       ROUTES_DISTANCE: {},
-      GATE: []
+      GATE: [],
+      ROUTES: []
     }
   },
   mounted() {
     this.initialize()
     var that = this;
 
-    d3.json("static/data/point_list.json", function(d) {
-      that.ROAD = d
+    d3.queue()
+      .defer(d3.json, "static/data/point_list.json")
+      .defer(d3.json, "static/data/route_distance_dict.json")
+      .defer(d3.csv, "static/data/sensor_position_1.csv")
+      .defer(d3.json, "static/data/routes.json")
+      .await(load_data)
+
+    function load_data(error, road, routes_distance, gate, routes) {
+      if (error) {console.error(error);}
+
+      that.ROAD = road;
       that.drawRoad()
-    })
 
-    d3.json("static/data/route_distance_dict.json", function(d) {
-      that.ROUTES_DISTANCE = d
-      that.drawRoutePath("camping1", "general-gate5")
-    })
+      that.ROUTES_DISTANCE = routes_distance
 
-    d3.csv("static/data/sensor_position_1.csv", function(d) {
-      that.GATE = d
+      that.GATE = gate
       that.drawGate()
-    })
 
-    d3.json("static/data/routes.json", function(d) {
-      console.log("Load routes finished");
-      that.drawRoutes([d[0]])
-    })
+      that.ROUTES = routes
+      console.log(routes[0]);
+      that.drawRoutes([routes[0], routes[1], routes[2], routes[3]])
+    }
   },
   methods: {
     initialize() {
-      var root = d3.select(".root")
-      this.svg = root.select("svg")
-        .style("width", 500)
-        .style("height", 500);
+      var width = 500,
+          height = 500;
 
-      var weight = this.svg.attr("weight"),
-          height = this.svg.attr("height")
+      var root = d3.select(".route-plot")
+      this.svg = root.select("svg")
+        .attr("width", width)
+        .attr("height", height);
 
       this.x_scale = d3.scaleLinear()
         .domain([0, 200])
-        .range([0, weight])
+        .range([0, width])
       this.y_scale = d3.scaleLinear()
         .domain([0, 200])
         .range([height, 0])
@@ -67,8 +82,8 @@ export default {
         .attr("id", "triangle")
         .attr("refX", 6)
         .attr("refY", 6)
-        .attr("markerWidth", 50)
-        .attr("markerHeight", 50)
+        .attr("markerWidth", 100)
+        .attr("markerHeight", 100)
         .attr("markerUnits","userSpaceOnUse")
         .attr("orient", "auto")
         .append("path")
@@ -85,8 +100,8 @@ export default {
       road.selectAll("circle")
         .data(this.ROAD)
         .enter().append("circle")
-        .style("fill", "grey")
-        .style("opacity", "0.5")
+        .style("fill", "lightgrey")
+        .style("opacity", "0.3")
         .attr("r", 2)
         .attr("cx", d => this.x_scale(d[0]))
         .attr("cy", d => this.y_scale(d[1]));
@@ -147,6 +162,7 @@ export default {
 
       // path
       path.append("path")
+        .datum(d => {console.log(d);return d})
         .attr("class", "line")
         .attr("d",valueline)
         .attr("marker-end", "url(#triangle)")
@@ -159,6 +175,7 @@ export default {
     //route should be a list of gate-names that the route pass
     drawRoutes(route_list) {
 
+      //handleing the data to generate route path
       for (var i = 0; i < route_list.length; i ++) {
         route_list[i].paths = []
         for (var j = 0; j < route_list[i].records.length - 1; j ++) {
@@ -168,9 +185,17 @@ export default {
 
       var svg = this.svg
 
+      //callback funtion for the line
       var valueline = d3.line()
-        .x(d => {console.log(d.revords);})
+        .x(d => {return this.x_scale(d[0])})
         .y(d => this.y_scale(d[1]))
+
+      var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+      /*
+      DOM Structure:
+        routes - route-group - paths - path
+      */
 
       var routes = svg.selectAll(".routes")
         .data([route_list])
@@ -178,22 +203,34 @@ export default {
         .attr("class", "routes")
 
       var route_group = routes.selectAll(".route-group")
-        .data(route_list)
+        .data(d => d)
         .enter().append("g")
         .attr("class", "route-group")
+        .attr("stroke", (d, i) => color(i))
+        .style("opacity", 0.3)
 
-      route_group.append("g")
+      var paths = route_group.selectAll(".paths")
+        .data(d => [d.paths])
+        .enter().append("g")
         .attr("class", "paths")
-        .datum(d => d.paths)
+
+      var path = paths.selectAll(".path")
+        .data(d => d)
         .enter().append("path")
-        .attr("class", "line")
-        .attr("x", d => {console.log(d);})
-        .attr("d", valueline)
+        .attr("class", "path")
+
+      path.datum(d => this.ROUTES_DISTANCE[d[0]][d[1]].break_points)
+        .attr("d",valueline)
         .attr("marker-end", "url(#triangle)")
-        .attr("stroke", "grey")
         .attr("stroke-width", "1.5")
         .attr("fill", "transparent")
 
+      //set lisiener for hovering
+      route_group.on("mouseover", function(d, i) {
+        d3.select(this).style("opacity", 1)
+      }).on("mouseout", function(d, i) {
+        d3.select(this).style("opacity", 0.3)
+      })
     }
   }
 
@@ -201,10 +238,9 @@ export default {
 </script>
 
 <style> /* set the CSS */
-.line {
+.path {
   fill: none;
-  stroke: red;
-  stroke-width: 3px;
+  stroke-width: 5px
 }
 
 .gate-group text {
