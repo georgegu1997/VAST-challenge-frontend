@@ -1,19 +1,8 @@
 <template>
-  <div class="root container-fluid">
-    <div class="row">
-      <div class="col-sm-3 left-panel">
-        <div class="route_selection">
-          
-        </div>
-      </div>
-      <div class="col-sm-9 right-panel">
-        <div class="row route-plot">
-          <svg>
-          </svg>
-        </div>
-      </div>
+    <div class="row route-plot">
+      <svg>
+      </svg>
     </div>
-  </div>
 </template>
 
 <script>
@@ -22,12 +11,26 @@ import * as punchcard from 'd3-punchcard/dist/d3-punchcard.min.js'
 
 export default {
   name: 'route-drawer',
+  props: {
+    routes: {
+      type: Array,
+      default: [],
+      validator: function(d) {
+        //console.log(d);
+        return true
+      }
+    }
+  },
+  watch: {
+    routes: function(newVal, oldVal) {
+      this.drawRoutes(newVal)
+    }
+  },
   data() {
     return {
       ROAD: [],
       ROUTES_DISTANCE: {},
       GATE: [],
-      ROUTES: []
     }
   },
   mounted() {
@@ -38,10 +41,9 @@ export default {
       .defer(d3.json, "static/data/point_list.json")
       .defer(d3.json, "static/data/route_distance_dict.json")
       .defer(d3.csv, "static/data/sensor_position_1.csv")
-      .defer(d3.json, "static/data/routes.json")
       .await(load_data)
 
-    function load_data(error, road, routes_distance, gate, routes) {
+    function load_data(error, road, routes_distance, gate) {
       if (error) {console.error(error);}
 
       that.ROAD = road;
@@ -52,9 +54,9 @@ export default {
       that.GATE = gate
       that.drawGate()
 
-      that.ROUTES = routes
-      console.log(routes[0]);
-      that.drawRoutes([routes[0], routes[1], routes[2], routes[3]])
+      //that.ROUTES = routes
+      //console.log(patterns);
+      //that.drawRoutes([routes[0], routes[1], routes[2], routes[3]])
     }
   },
   methods: {
@@ -174,7 +176,8 @@ export default {
     //routes should be a list of routes
     //route should be a list of gate-names that the route pass
     drawRoutes(route_list) {
-
+      //var route_list = this.routes
+      console.log("drawing:", route_list);
       //handleing the data to generate route path
       for (var i = 0; i < route_list.length; i ++) {
         route_list[i].paths = []
@@ -199,34 +202,60 @@ export default {
 
       var routes = svg.selectAll(".routes")
         .data([route_list])
-        .enter().append("g")
-        .attr("class", "routes")
 
-      var route_group = routes.selectAll(".route-group")
+      routes.exit().remove()
+      var routes_m = routes.enter().append("g")
+        .merge(routes).attr("class", "routes")
+
+      var route_group = routes_m.selectAll(".route-group")
         .data(d => d)
-        .enter().append("g")
+
+      route_group.exit().remove()
+      var route_group_m = route_group.enter().append("g")
+        .merge(route_group).attr("stroke", (d, i) => color(i))
         .attr("class", "route-group")
-        .attr("stroke", (d, i) => color(i))
         .style("opacity", 0.3)
 
-      var paths = route_group.selectAll(".paths")
-        .data(d => [d.paths])
-        .enter().append("g")
-        .attr("class", "paths")
+      var paths = route_group_m.selectAll(".paths")
+        .data(d => {
+          //console.log([d.paths]);
+          return [d.paths]
+        })
 
-      var path = paths.selectAll(".path")
-        .data(d => d)
-        .enter().append("path")
-        .attr("class", "path")
+      paths.exit().remove()
+      var paths_m = paths.enter().append("g")
+        .merge(paths).attr("class", "paths")
 
-      path.datum(d => this.ROUTES_DISTANCE[d[0]][d[1]].break_points)
+      var path = paths_m.selectAll(".path")
+        .data(d => {
+          console.log(d);
+          return d
+        })
+
+      path.exit().remove()
+      var path_m = path.enter().append("path")
+        .merge(path).attr("class", "path")
+
+      //console.log(this.ROUTES_DISTANCE);
+      path_m.datum(d => {
+        var route = this.ROUTES_DISTANCE[d[0]][d[1]]
+        if (route) {
+          return route.break_points
+        }else {
+          var index_1 = this.GATE.findIndex(g => g["gate-name"] == d[0])
+          var index_2 = this.GATE.findIndex(g => g["gate-name"] == d[1])
+          var point_1 = [this.GATE[index_1].x, this.GATE[index_1].y]
+          var point_2 = [this.GATE[index_2].x, this.GATE[index_2].y]
+          return [point_1, point_2];
+        }
+        })
         .attr("d",valueline)
         .attr("marker-end", "url(#triangle)")
         .attr("stroke-width", "1.5")
         .attr("fill", "transparent")
 
       //set lisiener for hovering
-      route_group.on("mouseover", function(d, i) {
+      route_group_m.on("mouseover", function(d, i) {
         d3.select(this).style("opacity", 1)
       }).on("mouseout", function(d, i) {
         d3.select(this).style("opacity", 0.3)

@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <route-drawer></route-drawer>
+    <mc1-route></mc1-route>
   </div>
 </template>
 
@@ -11,6 +11,7 @@ import VueLineChart from './components/VueLineChart'
 import CountByTimePlot from './components/CountByTimePlot'
 import PunchCards from './components/Punchcards'
 import RouteDrawer from './components/RouteDrawer'
+import Mc1Route from './components/Mc1Route'
 
 export default {
   name: 'app',
@@ -20,8 +21,9 @@ export default {
     VueLineChart,
     CountByTimePlot,
     PunchCards,
-    RouteDrawer
-  }
+    RouteDrawer,
+    Mc1Route,
+  },
 }
 </script>
 
