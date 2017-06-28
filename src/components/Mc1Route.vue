@@ -18,7 +18,12 @@
         </div>
       </div>
       <div class="col-sm-8 right-panel">
-        <route-drawer v-bind:routes="selected_routes"></route-drawer>
+        <div class="row">
+          <route-drawer v-bind:routes="selected_routes"></route-drawer>
+        </div>
+        <div class="row">
+          <car-type-bar v-bind:routes="selected_routes"></car-type-bar>
+        </div>
       </div>
     </div>
   </div>
@@ -27,11 +32,13 @@
 <script>
 import * as d3 from 'd3'
 import RouteDrawer from './RouteDrawer'
+import CarTypeBar from './CarTypeBar'
 
 export default {
   name: 'mc-1-route',
   components: {
-    RouteDrawer
+    RouteDrawer,
+    CarTypeBar
   },
   data() {
     return {

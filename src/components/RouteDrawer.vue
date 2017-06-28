@@ -1,5 +1,5 @@
 <template>
-    <div class="row route-plot">
+    <div class="route-plot">
       <svg>
       </svg>
     </div>
@@ -61,8 +61,8 @@ export default {
   },
   methods: {
     initialize() {
-      var width = 500,
-          height = 500;
+      var width = 400,
+          height = 400;
 
       var root = d3.select(".route-plot")
       this.svg = root.select("svg")
@@ -164,7 +164,7 @@ export default {
 
       // path
       path.append("path")
-        .datum(d => {console.log(d);return d})
+        .datum(d => d)
         .attr("class", "line")
         .attr("d",valueline)
         .attr("marker-end", "url(#triangle)")
@@ -177,7 +177,7 @@ export default {
     //route should be a list of gate-names that the route pass
     drawRoutes(route_list) {
       //var route_list = this.routes
-      console.log("drawing:", route_list);
+      //console.log("drawing:", route_list);
       //handleing the data to generate route path
       for (var i = 0; i < route_list.length; i ++) {
         route_list[i].paths = []
@@ -227,10 +227,7 @@ export default {
         .merge(paths).attr("class", "paths")
 
       var path = paths_m.selectAll(".path")
-        .data(d => {
-          console.log(d);
-          return d
-        })
+        .data(d => d)
 
       path.exit().remove()
       var path_m = path.enter().append("path")

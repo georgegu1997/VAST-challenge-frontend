@@ -1,0 +1,191 @@
+<template>
+  <div class="root">
+    <p>
+      car type distribution
+    </p>
+    <svg width="450" height="300" id="stacked-bar">
+    </svg>
+  </div>
+</template>
+
+<script>
+import * as d3 from 'd3'
+
+export default {
+  name: "car-type-bar",
+  props: {
+    routes: {
+      type: Array,
+      default: []
+    }
+  },
+  watch: {
+    routes: function(newVal, oldVal) {
+      var that = this;
+      this.type_counter = this.initCounter()
+      console.log("routes changed:",newVal);
+      newVal.forEach(function(route) {
+        route.travels.forEach(function(travel) {
+          that.type_counter[travel.car_type] += 1;
+        })
+      })
+      this.stacked_counter[0]["two_axles"] = this.type_counter["1"]
+      this.stacked_counter[0].total = this.type_counter["1"]
+      this.stacked_counter[1]["two_axles"] = this.type_counter["2"]
+      this.stacked_counter[1]["two_axles_pass"] = this.type_counter["2P"]
+      this.stacked_counter[1]["three_axles"] = this.type_counter["3"]
+      this.stacked_counter[1]["four_axles"] = this.type_counter["4"]
+      this.stacked_counter[1].total = this.type_counter["2"] + this.type_counter["2P"] + this.type_counter["3"] + this.type_counter["4"]
+      this.stacked_counter[2]["two_axles"] = this.type_counter["5"]
+      this.stacked_counter[2]["three_axles"] = this.type_counter["6"]
+      this.stacked_counter[2].total = this.type_counter["5"] + this.type_counter["6"]
+      console.log(that.stacked_counter);
+      this.drawBarChart()
+    }
+  },
+  data () {
+    return {
+      type_counter: {
+        "1":0,
+        "2":0,
+        "3":0,
+        "4":0,
+        "5":0,
+        "6":0,
+        "2P":0
+      },
+      stacked_counter: [
+        {type: "Car", two_axles: 0, two_axles_pass:0, three_axles: 0, four_axles: 0, total: 0},
+        {type: "Truck", two_axles: 0, two_axles_pass:0, three_axles: 0, four_axles: 0, total: 0},
+        {type: "Bus", two_axles: 0, two_axles_pass:0, three_axles: 0, four_axles: 0, total: 0}
+      ],
+      columns: ["two_axles", "two_axles_pass", "three_axles", "four_axles"],
+      keys: ["Car", "Truck", "Bus"]
+    }
+  },
+  mounted() {
+    this.svg = d3.select("#stacked-bar")
+    var svg = this.svg
+
+    var margin = {top: 20, right: 150, bottom: 20, left: 30}
+    this.width = +svg.attr("width") - margin.left - margin.right
+    this.height = +svg.attr("height") - margin.top - margin.bottom
+    this.g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    this.x = d3.scaleBand()
+      .rangeRound([0, this.width])
+      .padding(0.3)
+      .align(0.3)
+      .domain(this.keys)
+
+    this.y = d3.scaleLinear()
+      .rangeRound([this.height, 0])
+
+    this.z = d3.scaleOrdinal(d3.schemeCategory10)
+      .domain(this.columns)
+
+    this.stack = d3.stack()
+    this.drawStatic()
+  },
+  methods: {
+    initCounter() {
+      return {
+        "1":0,
+        "2":0,
+        "3":0,
+        "4":0,
+        "5":0,
+        "6":0,
+        "2P":0
+      }
+    },
+    drawStatic() {
+      var height = this.height;
+      var width = this.width;
+      var g = this.g;
+      var z = this.z;
+      var x = this.x;
+      var y = this.y;
+
+      g.append("g")
+          .attr("class", "axis axis--x")
+          .attr("transform", "translate(0," + height + ")")
+          .call(d3.axisBottom(x));
+
+      g.append("g")
+          .attr("class", "axis axis--y")
+          .call(d3.axisLeft(y).ticks(10, "s"))
+        .append("text")
+          .attr("x", 2)
+          .attr("y", y(y.ticks(10).pop()))
+          .attr("dy", "0.35em")
+          .attr("text-anchor", "start")
+          .attr("fill", "#000")
+          .text("Count");
+
+      var legend = g.selectAll(".legend")
+        .data(["two_axles", "two_axles_pass", "three_axles", "four_axles"])
+        .enter().append("g")
+          .attr("class", "legend")
+          .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; })
+          .style("font", "10px sans-serif");
+
+      legend.append("rect")
+          .attr("x", width + 18)
+          .attr("width", 18)
+          .attr("height", 18)
+          .attr("fill", z);
+
+      legend.append("text")
+          .attr("x", width + 44)
+          .attr("y", 9)
+          .attr("dy", ".35em")
+          .attr("text-anchor", "start")
+          .text(function(d) { return d; });
+
+    },
+    drawBarChart() {
+      //this.x.domain(this.stacked_counter.map(d => d.type))
+      this.y.domain([0, d3.max(this.stacked_counter, d => d.total)]).nice()
+      //this.z.domain(["two_axles", "two_axles_pass", "three_axles", "four_axles"])
+
+      var x = this.x;
+      var y = this.y;
+      var z = this.z;
+      var g = this.g;
+      var height = this.height;
+      var width = this.width;
+      var data = this.stacked_counter;
+      var stack = this.stack;
+
+      g.selectAll(".serie").remove()
+
+      g.selectAll(".serie")
+        .data(stack.keys(["two_axles", "two_axles_pass", "three_axles", "four_axles"])(data))
+        .enter().append("g")
+          .attr("class", "serie")
+          .attr("fill", function(d) { return z(d.key); })
+        .selectAll("rect")
+        .data(function(d) { return d; })
+        .enter().append("rect")
+          .attr("x", function(d) { return x(d.data.type); })
+          .attr("y", function(d) { return y(d[1]); })
+          .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+          .attr("width", x.bandwidth());
+
+      g.select(".axis--y").remove()
+
+      g.append("g")
+          .attr("class", "axis axis--y")
+          .call(d3.axisLeft(y).ticks(10, "s"))
+        .append("text")
+          .attr("x", 2)
+          .attr("y", y(y.ticks(10).pop()))
+          .attr("dy", "0.35em")
+          .attr("text-anchor", "start")
+          .attr("fill", "#000")
+          .text("Count");
+    }
+  }
+}
+</script>
