@@ -1,7 +1,18 @@
 <template>
-    <div class="route-plot">
-      <svg>
-      </svg>
+    <div class="root">
+      <div class="route-plot">
+        <svg>
+        </svg>
+      </div>
+      <!--
+      <div class="row car-ids">
+        <div v-for="route in routes">
+          <p v-for="travel in route.travels">
+            {{travel.car_id}}  {{travel.records[0].time.toUTCString()}}
+          </p>
+        </div>
+      </div>
+      -->
     </div>
 </template>
 
@@ -61,8 +72,8 @@ export default {
   },
   methods: {
     initialize() {
-      var width = 400,
-          height = 400;
+      var width = 500,
+          height = 500;
 
       var root = d3.select(".route-plot")
       this.svg = root.select("svg")

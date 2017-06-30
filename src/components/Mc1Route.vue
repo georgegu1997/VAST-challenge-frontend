@@ -1,5 +1,5 @@
 <template>
-  <div class="root container-fluid">
+  <div class="root container">
     <div class="row">
       <div class="col-sm-4 left-panel">
         <div class="route-selection">
@@ -9,9 +9,9 @@
             </h5>
             <div v-for="route in pattern.routes" class="route"
                v-on:click="toggleRoute(route)"
-               v-bind:class="{selected: route.selected}">
+               v-bind:style="{color: route.selected_color}">
               <p :title="route.description">
-                {{route.description}}
+                ({{route.travels.length}}){{route.description}}
               </p>
             </div>
           </div>
@@ -22,7 +22,12 @@
           <route-drawer v-bind:routes="selected_routes"></route-drawer>
         </div>
         <div class="row">
+          <h5>Car Type Distribution</h5>
           <car-type-bar v-bind:routes="selected_routes"></car-type-bar>
+        </div>
+        <div class="row">
+          <h5>Entry Time Distribution</h5>
+          <entry-time-heatmap v-bind:routes="selected_routes"></entry-time-heatmap>
         </div>
       </div>
     </div>
@@ -33,12 +38,14 @@
 import * as d3 from 'd3'
 import RouteDrawer from './RouteDrawer'
 import CarTypeBar from './CarTypeBar'
+import EntryTimeHeatmap from './EntryTimeHeatmap'
 
 export default {
   name: 'mc-1-route',
   components: {
     RouteDrawer,
-    CarTypeBar
+    CarTypeBar,
+    EntryTimeHeatmap
   },
   data() {
     return {
@@ -48,6 +55,7 @@ export default {
   },
   mounted() {
     var that = this;
+    this.color = d3.scaleOrdinal(d3.schemeCategory10);
 
     d3.queue()
       .defer(d3.json, "static/data/patterns.json")
@@ -55,6 +63,17 @@ export default {
 
     function load_data(error, patterns){
       if (error) {console.error(error);}
+
+      // construct the Date() object for every record
+      patterns.forEach(pattern => {
+        pattern.routes.forEach(route => {
+          route.travels.forEach(travel => {
+            travel.records.forEach(record => {
+              record.time = new Date(record.timestamp)
+            })
+          })
+        })
+      })
 
       that.PATTERNS = patterns
       //console.log(that.PATTERNS);
@@ -65,14 +84,14 @@ export default {
       var index = this.selected_routes.indexOf(route)
       if (index >= 0) {
         this.selected_routes.splice(index, 1)
+        route.selected_color = "#000000"
       }else {
         this.selected_routes.push(route)
+        //route.selected_color = this.color(this.selected_routes.indexOf(route))
       }
-      if (route.selected) {
-        route.selected = false
-      }else {
-        route.selected = true
-      }
+      this.selected_routes.forEach((r, i) => {
+        r.selected_color = this.color(i)
+      })
     }
   }
 }

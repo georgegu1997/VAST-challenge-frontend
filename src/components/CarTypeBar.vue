@@ -1,8 +1,5 @@
 <template>
   <div class="root">
-    <p>
-      car type distribution
-    </p>
     <svg width="450" height="300" id="stacked-bar">
     </svg>
   </div>
@@ -23,7 +20,6 @@ export default {
     routes: function(newVal, oldVal) {
       var that = this;
       this.type_counter = this.initCounter()
-      console.log("routes changed:",newVal);
       newVal.forEach(function(route) {
         route.travels.forEach(function(travel) {
           that.type_counter[travel.car_type] += 1;
@@ -39,7 +35,6 @@ export default {
       this.stacked_counter[2]["two_axles"] = this.type_counter["5"]
       this.stacked_counter[2]["three_axles"] = this.type_counter["6"]
       this.stacked_counter[2].total = this.type_counter["5"] + this.type_counter["6"]
-      console.log(that.stacked_counter);
       this.drawBarChart()
     }
   },
@@ -81,7 +76,7 @@ export default {
     this.y = d3.scaleLinear()
       .rangeRound([this.height, 0])
 
-    this.z = d3.scaleOrdinal(d3.schemeCategory10)
+    this.z = d3.scaleOrdinal(d3.schemeCategory20)
       .domain(this.columns)
 
     this.stack = d3.stack()
