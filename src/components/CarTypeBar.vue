@@ -14,27 +14,18 @@ export default {
     routes: {
       type: Array,
       default: []
+    },
+    types: {
+      type: Array
     }
   },
   watch: {
     routes: function(newVal, oldVal) {
-      var that = this;
-      this.type_counter = this.initCounter()
-      newVal.forEach(function(route) {
-        route.travels.forEach(function(travel) {
-          that.type_counter[travel.car_type] += 1;
-        })
-      })
-      this.stacked_counter[0]["two_axles"] = this.type_counter["1"]
-      this.stacked_counter[0].total = this.type_counter["1"]
-      this.stacked_counter[1]["two_axles"] = this.type_counter["2"]
-      this.stacked_counter[1]["two_axles_pass"] = this.type_counter["2P"]
-      this.stacked_counter[1]["three_axles"] = this.type_counter["3"]
-      this.stacked_counter[1]["four_axles"] = this.type_counter["4"]
-      this.stacked_counter[1].total = this.type_counter["2"] + this.type_counter["2P"] + this.type_counter["3"] + this.type_counter["4"]
-      this.stacked_counter[2]["two_axles"] = this.type_counter["5"]
-      this.stacked_counter[2]["three_axles"] = this.type_counter["6"]
-      this.stacked_counter[2].total = this.type_counter["5"] + this.type_counter["6"]
+      this.transformData()
+      this.drawBarChart()
+    },
+    types: function(newVal, oldVal) {
+      this.transformData()
       this.drawBarChart()
     }
   },
@@ -76,7 +67,7 @@ export default {
     this.y = d3.scaleLinear()
       .rangeRound([this.height, 0])
 
-    this.z = d3.scaleOrdinal(d3.schemeCategory20)
+    this.z = d3.scaleOrdinal(d3.schemeCategory10)
       .domain(this.columns)
 
     this.stack = d3.stack()
@@ -93,6 +84,25 @@ export default {
         "6":0,
         "2P":0
       }
+    },
+    transformData() {
+      var that = this;
+      this.type_counter = this.initCounter()
+      this.routes.forEach(function(route) {
+        route.travels.forEach(function(travel) {
+          that.type_counter[travel.car_type] += 1;
+        })
+      })
+      this.stacked_counter[0]["two_axles"] = this.type_counter["1"]
+      this.stacked_counter[0].total = this.type_counter["1"]
+      this.stacked_counter[1]["two_axles"] = this.type_counter["2"]
+      this.stacked_counter[1]["two_axles_pass"] = this.type_counter["2P"]
+      this.stacked_counter[1]["three_axles"] = this.type_counter["3"]
+      this.stacked_counter[1]["four_axles"] = this.type_counter["4"]
+      this.stacked_counter[1].total = this.type_counter["2"] + this.type_counter["2P"] + this.type_counter["3"] + this.type_counter["4"]
+      this.stacked_counter[2]["two_axles"] = this.type_counter["5"]
+      this.stacked_counter[2]["three_axles"] = this.type_counter["6"]
+      this.stacked_counter[2].total = this.type_counter["5"] + this.type_counter["6"]
     },
     drawStatic() {
       var height = this.height;
@@ -166,7 +176,7 @@ export default {
           .attr("x", function(d) { return x(d.data.type); })
           .attr("y", function(d) { return y(d[1]); })
           .attr("height", function(d) { return y(d[0]) - y(d[1]); })
-          .attr("width", x.bandwidth());
+          .attr("width", x.bandwidth())
 
       g.select(".axis--y").remove()
 

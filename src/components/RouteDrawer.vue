@@ -72,8 +72,8 @@ export default {
   },
   methods: {
     initialize() {
-      var width = 500,
-          height = 500;
+      var width = 400,
+          height = 400;
 
       var root = d3.select(".route-plot")
       this.svg = root.select("svg")

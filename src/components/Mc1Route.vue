@@ -1,7 +1,7 @@
 <template>
   <div class="root container">
     <div class="row">
-      <div class="col-sm-4 left-panel">
+      <div class="col-sm-3 left-panel">
         <div class="route-selection">
           <div v-for="pattern in PATTERNS" class="pattern">
             <h5>
@@ -17,17 +17,70 @@
           </div>
         </div>
       </div>
-      <div class="col-sm-8 right-panel">
+      <div class="col-sm-9 right-panel">
         <div class="row">
-          <route-drawer v-bind:routes="selected_routes"></route-drawer>
+          <div class="col-md-6">
+            <route-drawer
+            v-bind:routes="selected_routes"
+            ></route-drawer>
+          </div>
+          <div class="col-md-6">
+            <h5>Car Type Distribution</h5>
+            <car-type-bar
+            v-bind:routes="selected_routes"
+            v-bind:types="car_type_concerned"
+            ></car-type-bar>
+          </div>
         </div>
         <div class="row">
-          <h5>Car Type Distribution</h5>
-          <car-type-bar v-bind:routes="selected_routes"></car-type-bar>
+          <h5>Car Type Selection</h5>
+        </div>
+        <div class="car-type-select row">
+          <div class="col-md-1">
+            <input type="checkbox" id="checkbox-1" value="1" v-model="car_type_concerned">
+            <label for="checkbox-1">1</label>
+          </div>
+          <div class="col-md-1">
+            <input type="checkbox" id="checkbox-2" value="2" v-model="car_type_concerned">
+            <label for="checkbox-2">2</label>
+          </div>
+          <div class="col-md-1">
+            <input type="checkbox" id="checkbox-3" value="3" v-model="car_type_concerned">
+            <label for="checkbox-3">3</label>
+          </div>
+          <div class="col-md-1">
+            <input type="checkbox" id="checkbox-4" value="4" v-model="car_type_concerned">
+            <label for="checkbox-4">4</label>
+          </div>
+          <div class="col-md-1">
+            <input type="checkbox" id="checkbox-5" value="5" v-model="car_type_concerned">
+            <label for="checkbox-5">5</label>
+          </div>
+          <div class="col-md-1">
+            <input type="checkbox" id="checkbox-6" value="6" v-model="car_type_concerned">
+            <label for="checkbox-6">6</label>
+          </div>
+          <div class="col-md-1">
+            <input type="checkbox" id="checkbox-2P" value="2P" v-model="car_type_concerned">
+            <label for="checkbox-2P">2P</label>
+          </div>
         </div>
         <div class="row">
           <h5>Entry Time Distribution</h5>
-          <entry-time-heatmap v-bind:routes="selected_routes"></entry-time-heatmap>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <entry-time-heatmap
+            v-bind:routes="selected_routes"
+            v-bind:types="car_type_concerned"
+            ></entry-time-heatmap>
+          </div>
+          <div class="col-md-4">
+            <entry-time-punchcard
+            v-bind:routes="selected_routes"
+            v-bind:types="car_type_concerned"
+            ></entry-time-punchcard>
+          </div>
         </div>
       </div>
     </div>
@@ -39,18 +92,27 @@ import * as d3 from 'd3'
 import RouteDrawer from './RouteDrawer'
 import CarTypeBar from './CarTypeBar'
 import EntryTimeHeatmap from './EntryTimeHeatmap'
+import EntryTimePunchcard from "./EntryTimePunchcard"
 
 export default {
   name: 'mc-1-route',
   components: {
     RouteDrawer,
     CarTypeBar,
-    EntryTimeHeatmap
+    EntryTimeHeatmap,
+    EntryTimePunchcard
   },
   data() {
     return {
       PATTERNS: [],
       selected_routes: [],
+      car_type_concerned: ['1','2','3','4','5','6','2P'],
+      test: true
+    }
+  },
+  watch: {
+    car_type_concerned: function(newVal, oldVal) {
+      console.log(newVal);
     }
   },
   mounted() {

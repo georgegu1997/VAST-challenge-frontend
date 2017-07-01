@@ -1,5 +1,5 @@
 <template>
-  <div class="root" style="height: 400px; width: 100%" id="heatmap">
+  <div class="root" id="heatmap">
   </div>
 </template>
 
@@ -12,6 +12,9 @@ export default {
     routes: {
       type: Array,
       default: []
+    },
+    types: {
+      type: Array
     }
   },
   data() {
@@ -26,6 +29,10 @@ export default {
   },
   watch: {
     routes: function(newVal, oldVal) {
+      this.transformData()
+      this.drawHeatmap()
+    },
+    types: function(newVal, oldVal) {
       this.transformData()
       this.drawHeatmap()
     }
@@ -61,9 +68,11 @@ export default {
             var counter = 0
             routes.forEach(route => {
               route.travels.forEach(travel => {
-                var entry_time = travel.records[0].timestamp
-                if (entry_time >= time && entry_time < time + dayTime) {
-                  counter ++
+                if (this.types.indexOf(travel.car_type) >= 0) {
+                  var entry_time = travel.records[0].timestamp
+                  if (entry_time >= time && entry_time < time + dayTime) {
+                    counter ++
+                  }
                 }
               })
             })
@@ -107,12 +116,12 @@ export default {
           calendar: [
           {
               range: '2015',
-              cellSize: ['auto', 20]
+              cellSize: ['auto', 12]
           },
           {
-              top: 260,
+              top: 170,
               range: '2016',
-              cellSize: ['auto', 20]
+              cellSize: ['auto', 12]
           }],
 
           series: [{
@@ -141,6 +150,7 @@ export default {
 .root {
   height: 300px;
   width: 100%;
-  margin-right: 30px;
+  padding-right: 30px;
+  margin-bottom: 20px
 }
 </style>
