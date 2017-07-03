@@ -5,6 +5,7 @@
 
 <script>
 import * as echarts from "echarts"
+import * as d3 from "d3"
 
 export default {
   name: 'entry-time-heatmap',
@@ -42,6 +43,12 @@ export default {
     this.heatmap = echarts.init(dom)
     this.transformData()
     this.drawHeatmap()
+    /*
+    var dom_d3 = d3.select("#heatmap")
+    this.height = dom_d3.attr("height")
+    this.width = dom_d3.attr("width")
+    console.log(this.height, this.width);
+    */
   },
   methods: {
     transformData() {
@@ -108,20 +115,24 @@ export default {
               min: 0,
               max: this.max,
               calculable: true,
-              orient: 'horizontal',
-              left: 'center',
-              top: 'top'
+              orient: 'vertical',
+              left: '0',
+              top: 'center'
           },
 
           calendar: [
           {
+              orient: 'vertical',
               range: '2015',
-              cellSize: ['auto', 12]
+              cellSize: ['auto', 8],
+              width:100
           },
           {
-              top: 170,
+              orient: 'vertical',
+              left: 220,
               range: '2016',
-              cellSize: ['auto', 12]
+              cellSize: ['auto', 8],
+              width:100
           }],
 
           series: [{
@@ -148,9 +159,7 @@ export default {
 
 <style scoped>
 .root {
-  height: 300px;
+  height: 500px;
   width: 100%;
-  padding-right: 30px;
-  margin-bottom: 20px
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div class="root">
-    <svg width="450" height="300" id="stacked-bar">
+    <svg width="450" height="250" id="stacked-bar">
     </svg>
   </div>
 </template>

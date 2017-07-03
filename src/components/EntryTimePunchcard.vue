@@ -175,7 +175,7 @@ export default {
 
 <style scoped>
 .root {
-  height: 100%;
+  height: 380px;
   width: 100%;
   margin: 0;
 }
