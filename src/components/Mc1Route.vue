@@ -1,23 +1,29 @@
 <template>
-  <div class="root container">
-    <div class="row">
-      <div class="col-sm-3 left-panel">
-        <div class="route-selection">
-          <div v-for="pattern in PATTERNS" class="pattern">
-            <h5>
-              {{pattern.name}}
-            </h5>
-            <div v-for="route in pattern.routes" class="route"
-               v-on:click="toggleRoute(route)"
-               v-bind:style="{color: route.selected_color}">
-              <p :title="route.description">
-                ({{route.travels.length}}){{route.description}}
-              </p>
+  <div class="root container-fluid">
+    <div class="row main">
+      <div class="col-md-2 left-panel">
+        <div class="card">
+          <div class="card-header">
+            Route Selection
+          </div>
+          <div class="route-selection card-block">
+            <div v-for="pattern in PATTERNS" class="pattern">
+              <h5>
+                {{pattern.name}}
+              </h5>
+              <div v-for="route in pattern.routes" class="route"
+                 v-on:click="toggleRoute(route)"
+                 v-bind:style="{color: route.selected_color}">
+                <p :title="route.description">
+                  ({{route.travels.length}}){{route.description}}
+                </p>
+              </div>
             </div>
           </div>
         </div>
+
       </div>
-      <div class="col-sm-9 right-panel">
+      <div class="col-md-6 right-panel">
         <div class="row">
           <div class="col-md-6">
             <route-drawer
@@ -116,6 +122,7 @@ export default {
     }
   },
   mounted() {
+
     var that = this;
     this.color = d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -159,10 +166,18 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.main {
+  height: 100%
+}
+
+.card {
+  height: 100%
+}
+
 .route-selection {
   text-align: left;
-  max-height: 600px;
+  height: 100%;
   overflow-y: scroll;
 }
 

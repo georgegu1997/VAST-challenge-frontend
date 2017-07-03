@@ -1,39 +1,62 @@
 <template>
-  <div id="app">
-    <mc1-route></mc1-route>
+<div class="root">
+  <b-navbar toggleable type="inverse" variant="primary">
+
+    <b-nav-toggle target="nav_collapse"></b-nav-toggle>
+
+    <b-link class="navbar-brand" to="#">
+      <span>VAST Challenge</span>
+    </b-link>
+
+    <b-collapse is-nav id="nav_collapse">
+
+      <b-nav is-nav-bar>
+        <b-nav-item-dropdown text="Mini Challenge 1">
+          <b-dropdown-item to="/mc1-route">View Routes</b-dropdown-item>
+        </b-nav-item-dropdown>
+        <b-nav-item-dropdown text="Mini Challenge 2">
+          <b-dropdown-item to="/">View Routes</b-dropdown-item>
+        </b-nav-item-dropdown>
+        <b-nav-item-dropdown text="Mini Challenge 3">
+          <b-dropdown-item to="/">View Routes</b-dropdown-item>
+        </b-nav-item-dropdown>
+      </b-nav>
+
+    </b-collapse>
+  </b-navbar>
+  <div id="router-outlet">
+    <router-view></router-view>
   </div>
+</div>
 </template>
 
 <script>
-import Hello from './components/Hello'
-import NonVueLineChart from './components/NonVueLineChart'
-import VueLineChart from './components/VueLineChart'
-import CountByTimePlot from './components/CountByTimePlot'
-import PunchCards from './components/Punchcards'
-import RouteDrawer from './components/RouteDrawer'
-import Mc1Route from './components/Mc1Route'
-
 export default {
   name: 'app',
-  components: {
-    Hello,
-    NonVueLineChart,
-    VueLineChart,
-    CountByTimePlot,
-    PunchCards,
-    RouteDrawer,
-    Mc1Route,
-  },
 }
 </script>
 
-<style>
-#app {
+<style scoped>
+.navbar {
+  height: 60px;
+  z-index: 10;
+}
+
+#router-outlet {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  width: 100%;
+  position: absolute;
+  top: 60px;
+  bottom: 0;
+  z-index: 5;
+  padding: 20px;
+  padding-bottom: 40px;
+}
+.root {
+  height: 100%
 }
 </style>

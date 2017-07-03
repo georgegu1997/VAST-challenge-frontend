@@ -177,6 +177,9 @@ export default {
           .attr("y", function(d) { return y(d[1]); })
           .attr("height", function(d) { return y(d[0]) - y(d[1]); })
           .attr("width", x.bandwidth())
+          .on("click", function(d) {
+            console.log(d);
+          })
 
       g.select(".axis--y").remove()
 
