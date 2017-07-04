@@ -82,6 +82,8 @@
                   <car-type-bar
                   v-bind:routes="selected_routes"
                   v-bind:types="car_type_concerned"
+                  v-bind:car_type_color_set="car_type_color_set"
+                  v-bind:car_type_concerned="car_type_concerned"
                   ></car-type-bar>
 
                 </div>

@@ -7,8 +7,10 @@
           {{travel.car_id}}
         </p>
         <h5>Vehicle Type:</h5>
-        <p v-bind:style="{color: car_type_color_set[travel.car_type]}">
-          {{car_type_full_name[travel.car_type]}}
+        <p>
+          <span class="badge" v-bind:style="{backgroundColor: car_type_color_set[travel.car_type]}">
+            {{car_type_full_name[travel.car_type]}}
+          </span>
         </p>
         <h5>Vehicle Logs:</h5>
         <p v-for="record in travel.records">
@@ -42,7 +44,7 @@ export default {
   },
   methods: {
     formateDate(date) {
-      return echarts.format.formatTime('yy-MM-dd hh:mm', date)
+      return echarts.format.formatTime('yy-MM-dd hh:mm:ss', date)
     }
   }
 }

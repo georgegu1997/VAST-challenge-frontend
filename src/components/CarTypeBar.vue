@@ -1,6 +1,6 @@
 <template>
   <div class="root">
-    <svg width="450" height="250" id="stacked-bar">
+    <svg width="300" height="250" id="stacked-bar">
     </svg>
   </div>
 </template>
@@ -17,6 +17,12 @@ export default {
     },
     types: {
       type: Array
+    },
+    car_type_color_set: {
+      type: Object
+    },
+    car_type_concerned: {
+      type: Array
     }
   },
   watch: {
@@ -26,6 +32,15 @@ export default {
     },
     types: function(newVal, oldVal) {
       this.transformData()
+      this.drawBarChart()
+    },
+    car_type_color_set: function(newVal, oldVal) {
+      console.log(newVal);
+      this.transfromColorSet()
+    },
+    car_type_concerned: function(newVal, oldVal) {
+      this.transformOpacitySet()
+      console.log(this.opacity_set);
       this.drawBarChart()
     }
   },
@@ -46,14 +61,16 @@ export default {
         {type: "Bus", two_axles: 0, two_axles_pass:0, three_axles: 0, four_axles: 0, total: 0}
       ],
       columns: ["two_axles", "two_axles_pass", "three_axles", "four_axles"],
-      keys: ["Car", "Truck", "Bus"]
+      keys: ["Car", "Truck", "Bus"],
+      color_set: [],
+      opacity_set: [],
     }
   },
   mounted() {
     this.svg = d3.select("#stacked-bar")
     var svg = this.svg
 
-    var margin = {top: 20, right: 150, bottom: 20, left: 30}
+    var margin = {top: 20, right: 20, bottom: 20, left: 30}
     this.width = +svg.attr("width") - margin.left - margin.right
     this.height = +svg.attr("height") - margin.top - margin.bottom
     this.g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -72,6 +89,9 @@ export default {
 
     this.stack = d3.stack()
     this.drawStatic()
+
+    this.transfromColorSet()
+    this.transformOpacitySet()
   },
   methods: {
     initCounter() {
@@ -104,6 +124,34 @@ export default {
       this.stacked_counter[2]["three_axles"] = this.type_counter["6"]
       this.stacked_counter[2].total = this.type_counter["5"] + this.type_counter["6"]
     },
+    transformOpacitySet() {
+      this.opacity_set[0] = this.car_type_concerned.indexOf('1') >= 0?1:0.2
+      this.opacity_set[1] = this.car_type_concerned.indexOf('2') >= 0?1:0.2
+      this.opacity_set[2] = this.car_type_concerned.indexOf('5') >= 0?1:0.2
+      this.opacity_set[3] = 1
+      this.opacity_set[4] = this.car_type_concerned.indexOf('2P') >= 0?1:0.2
+      this.opacity_set[5] = 1
+      this.opacity_set[6] = 1
+      this.opacity_set[7] = this.car_type_concerned.indexOf('3') >= 0?1:0.2
+      this.opacity_set[8] = this.car_type_concerned.indexOf('6') >= 0?1:0.2
+      this.opacity_set[9] = 1
+      this.opacity_set[10] = this.car_type_concerned.indexOf('4') >= 0?1:0.2
+      this.opacity_set[11] = 1
+    },
+    transfromColorSet() {
+      this.color_set[0] = this.car_type_color_set['1']
+      this.color_set[1] = this.car_type_color_set['2']
+      this.color_set[2] = this.car_type_color_set['5']
+      this.color_set[3] = "#ffffff"
+      this.color_set[4] = this.car_type_color_set['2P']
+      this.color_set[5] = "#ffffff"
+      this.color_set[6] = "#ffffff"
+      this.color_set[7] = this.car_type_color_set['3']
+      this.color_set[8] = this.car_type_color_set['6']
+      this.color_set[9] = "#ffffff"
+      this.color_set[10] = this.car_type_color_set['4']
+      this.color_set[11] = "#ffffff"
+    },
     drawStatic() {
       var height = this.height;
       var width = this.width;
@@ -128,6 +176,7 @@ export default {
           .attr("fill", "#000")
           .text("Count");
 
+      /*
       var legend = g.selectAll(".legend")
         .data(["two_axles", "two_axles_pass", "three_axles", "four_axles"])
         .enter().append("g")
@@ -147,6 +196,7 @@ export default {
           .attr("dy", ".35em")
           .attr("text-anchor", "start")
           .text(function(d) { return d; });
+      */
 
     },
     drawBarChart() {
@@ -162,6 +212,8 @@ export default {
       var width = this.width;
       var data = this.stacked_counter;
       var stack = this.stack;
+      var color_counter = 0;
+      var opacity_counter = 0;
 
       g.selectAll(".serie").remove()
 
@@ -169,7 +221,10 @@ export default {
         .data(stack.keys(["two_axles", "two_axles_pass", "three_axles", "four_axles"])(data))
         .enter().append("g")
           .attr("class", "serie")
-          .attr("fill", function(d) { return z(d.key); })
+          .attr("fill", function(d) {
+            //console.log(d);
+            return z(d.key);
+          })
         .selectAll("rect")
         .data(function(d) { return d; })
         .enter().append("rect")
@@ -177,8 +232,15 @@ export default {
           .attr("y", function(d) { return y(d[1]); })
           .attr("height", function(d) { return y(d[0]) - y(d[1]); })
           .attr("width", x.bandwidth())
-          .on("click", function(d) {
-            console.log(d);
+          .attr("fill", d => {
+            //console.log(d);
+            color_counter ++;
+            return this.color_set[color_counter - 1];
+          })
+          .attr("opacity", d => {
+            opacity_counter ++;
+            console.log(this.opacity_set);
+            return this.opacity_set[opacity_counter - 1];
           })
 
       g.select(".axis--y").remove()
