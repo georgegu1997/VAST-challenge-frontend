@@ -126,14 +126,25 @@
       <div class="col-md-4 right-panel">
         <div class="card">
           <div class="card-header">
-            View Individuals
+            Travels Timeline
           </div>
           <div class="card-block">
             <travel-timeline
             v-bind:routes="selected_routes"
             v-bind:types="car_type_concerned"
             v-bind:car_type_color_set="car_type_color_set"
+            v-on:setTravel="setDetailedTravel"
             ></travel-timeline>
+          </div>
+          <div class="card-header">
+            Travel Detail
+          </div>
+          <div class="card-block">
+            <travel-detail
+            v-bind:travel="selected_travel"
+            v-bind:car_type_full_name="car_type_full_name"
+            v-bind:car_type_color_set="car_type_color_set"
+            ></travel-detail>
           </div>
         </div>
       </div>
@@ -148,6 +159,7 @@ import CarTypeBar from './CarTypeBar'
 import EntryTimeHeatmap from './EntryTimeHeatmap'
 import EntryTimePunchcard from "./EntryTimePunchcard"
 import TravelTimeline from "./TravelTimeline"
+import TravelDetail from "./TravelDetail"
 
 export default {
   name: 'mc-1-route',
@@ -156,7 +168,8 @@ export default {
     CarTypeBar,
     EntryTimeHeatmap,
     EntryTimePunchcard,
-    TravelTimeline
+    TravelTimeline,
+    TravelDetail
   },
   data() {
     return {
@@ -172,6 +185,16 @@ export default {
         "5": "#3399ff",
         "6": "#0000ff",
         "2P": "#999999"
+      },
+      selected_travel: undefined,
+      car_type_full_name: {
+        "1": "2 axles car (or motorcycle)",
+        "2": "2 axles truck",
+        "3": "3 axles truck",
+        "4": "4 axles (or more) truck",
+        "5": "2 axles bus",
+        "6": "3 axles bus",
+        "2P": "2 axles truck (with permission)"
       }
     }
   },
@@ -206,6 +229,7 @@ export default {
       that.PATTERNS = patterns
       //console.log(that.PATTERNS);
     }
+
   },
   methods: {
     toggleRoute(route) {
@@ -220,6 +244,29 @@ export default {
       this.selected_routes.forEach((r, i) => {
         r.selected_color = this.color(i)
       })
+    },
+    searchTravel(car_id) {
+      //console.log(this.PATTERNS);
+      for (var n = 0; n < this.PATTERNS.length; n ++) {
+        var pattern = this.PATTERNS[n]
+        //console.log(routes);
+        for (var i = 0; i < pattern.routes.length; i ++) {
+          var route = pattern.routes[i]
+          for (var j = 0; j < route.travels.length; j ++) {
+            var travel = route.travels[j]
+            //console.log(travel.car_id);
+            if (travel.car_id === car_id) {
+              return travel
+            }
+          }
+        }
+      }
+
+      console.error("Travel not found!");
+    },
+    setDetailedTravel(car_id) {
+      //console.log(car_id);
+      this.selected_travel = this.searchTravel(car_id)
     }
   }
 }

@@ -47,6 +47,7 @@ export default {
   mounted() {
     var dom = document.getElementById("timeline");
     this.timeline = echarts.init(dom);
+
   },
   methods: {
     initData() {
@@ -213,6 +214,11 @@ export default {
       if (this.option && typeof this.option === "object") {
         this.timeline.setOption(this.option, true);
       }
+
+      this.timeline.on("click", params => {
+        console.log(params)
+        this.$emit('setTravel', params.name)
+      })
     }
   }
 }
@@ -220,7 +226,7 @@ export default {
 
 <style scoped>
 .root {
-  height: 500px;
+  height: 450px;
   width: 100%;
   margin: 0;
 }
