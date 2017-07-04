@@ -26,32 +26,39 @@
           <div class="card-block">
             <div class="car-type-select row">
               <div class="col-md-1">
-                <input type="checkbox" id="checkbox-1" value="1" v-model="car_type_concerned">
-                <label for="checkbox-1">1</label>
+                <input type="checkbox" id="checkbox-1" value="1"
+                v-model="car_type_concerned">
+                <label for="checkbox-1"><span class="badge" v-bind:style="{backgroundColor: car_type_color_set['1']}">1</span></label>
               </div>
               <div class="col-md-1">
-                <input type="checkbox" id="checkbox-2" value="2" v-model="car_type_concerned">
-                <label for="checkbox-2">2</label>
+                <input type="checkbox" id="checkbox-2" value="2"
+                v-model="car_type_concerned">
+                <label for="checkbox-2"><span class="badge" v-bind:style="{backgroundColor: car_type_color_set['2']}">2</span></label>
               </div>
               <div class="col-md-1">
-                <input type="checkbox" id="checkbox-3" value="3" v-model="car_type_concerned">
-                <label for="checkbox-3">3</label>
+                <input type="checkbox" id="checkbox-3" value="3"
+                v-model="car_type_concerned">
+                <label for="checkbox-3"><span class="badge" v-bind:style="{backgroundColor: car_type_color_set['3']}">3</span></label>
               </div>
               <div class="col-md-1">
-                <input type="checkbox" id="checkbox-4" value="4" v-model="car_type_concerned">
-                <label for="checkbox-4">4</label>
+                <input type="checkbox" id="checkbox-4" value="4"
+                v-model="car_type_concerned">
+                <label for="checkbox-4"><span class="badge" v-bind:style="{backgroundColor: car_type_color_set['4']}">4</span></label>
               </div>
               <div class="col-md-1">
-                <input type="checkbox" id="checkbox-5" value="5" v-model="car_type_concerned">
-                <label for="checkbox-5">5</label>
+                <input type="checkbox" id="checkbox-5" value="5"
+                v-model="car_type_concerned">
+                <label for="checkbox-5"><span class="badge" v-bind:style="{backgroundColor: car_type_color_set['5']}">5</span></label>
               </div>
               <div class="col-md-1">
-                <input type="checkbox" id="checkbox-6" value="6" v-model="car_type_concerned">
-                <label for="checkbox-6">6</label>
+                <input type="checkbox" id="checkbox-6" value="6"
+                v-model="car_type_concerned">
+                <label for="checkbox-6"><span class="badge" v-bind:style="{backgroundColor: car_type_color_set['6']}">6</span></label>
               </div>
               <div class="col-md-1">
-                <input type="checkbox" id="checkbox-2P" value="2P" v-model="car_type_concerned">
-                <label for="checkbox-2P">2P</label>
+                <input type="checkbox" id="checkbox-2P" value="2P"
+                v-model="car_type_concerned">
+                <label for="checkbox-2P"><span class="badge" v-bind:style="{backgroundColor: car_type_color_set['2P']}">2P</span></label>
               </div>
             </div>
           </div>
@@ -116,6 +123,20 @@
         </div>
         -->
       </div>
+      <div class="col-md-4 right-panel">
+        <div class="card">
+          <div class="card-header">
+            View Individuals
+          </div>
+          <div class="card-block">
+            <travel-timeline
+            v-bind:routes="selected_routes"
+            v-bind:types="car_type_concerned"
+            v-bind:car_type_color_set="car_type_color_set"
+            ></travel-timeline>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -126,6 +147,7 @@ import RouteDrawer from './RouteDrawer'
 import CarTypeBar from './CarTypeBar'
 import EntryTimeHeatmap from './EntryTimeHeatmap'
 import EntryTimePunchcard from "./EntryTimePunchcard"
+import TravelTimeline from "./TravelTimeline"
 
 export default {
   name: 'mc-1-route',
@@ -133,14 +155,24 @@ export default {
     RouteDrawer,
     CarTypeBar,
     EntryTimeHeatmap,
-    EntryTimePunchcard
+    EntryTimePunchcard,
+    TravelTimeline
   },
   data() {
     return {
       PATTERNS: [],
       selected_routes: [],
       car_type_concerned: ['1','2','3','4','5','6','2P'],
-      test: true
+      test: true,
+      car_type_color_set: {
+        "1": "#009933",
+        "2": "#ff00ff",
+        "3": "#ff0066",
+        "4": "#990000",
+        "5": "#3399ff",
+        "6": "#0000ff",
+        "2P": "#999999"
+      }
     }
   },
   watch: {
