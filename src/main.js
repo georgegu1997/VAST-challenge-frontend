@@ -7,6 +7,7 @@ import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import Mc1Route from './components/Mc1Route'
+import Mc3Parallel from './components/Mc3Parallel'
 
 import Hello from './components/Hello'
 
@@ -19,6 +20,10 @@ const router = new VueRouter({
     {
       path: '/mc1-route',
       component: Mc1Route,
+    },
+    {
+      path: '/mc3-parallel',
+      component: Mc3Parallel,
     },
     {
       path:'/',

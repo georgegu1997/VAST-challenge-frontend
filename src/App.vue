@@ -18,7 +18,7 @@
           <b-dropdown-item to="/">View Routes</b-dropdown-item>
         </b-nav-item-dropdown>
         <b-nav-item-dropdown text="Mini Challenge 3">
-          <b-dropdown-item to="/">View Routes</b-dropdown-item>
+          <b-dropdown-item to="/mc3-parallel">Parallel Coordinates</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-nav>
 
