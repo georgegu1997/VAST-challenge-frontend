@@ -13,6 +13,7 @@
       <b-nav is-nav-bar>
         <b-nav-item-dropdown text="Mini Challenge 1">
           <b-dropdown-item to="/mc1-route">View Routes</b-dropdown-item>
+          <b-dropdown-item to="/mc1-decision-tree">Pattern Decision Tree</b-dropdown-item>
         </b-nav-item-dropdown>
         <b-nav-item-dropdown text="Mini Challenge 2">
           <b-dropdown-item to="/">View Routes</b-dropdown-item>

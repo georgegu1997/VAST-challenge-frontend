@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import Mc1Route from './components/Mc1Route'
 import Mc3Parallel from './components/Mc3Parallel'
+import Mc1DecisionTree from './components/Mc1DecisionTree'
 
 import Hello from './components/Hello'
 
@@ -20,6 +21,10 @@ const router = new VueRouter({
     {
       path: '/mc1-route',
       component: Mc1Route,
+    },
+    {
+      path: '/mc1-decision-tree',
+      component: Mc1DecisionTree
     },
     {
       path: '/mc3-parallel',
