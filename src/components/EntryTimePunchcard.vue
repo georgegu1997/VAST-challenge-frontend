@@ -86,8 +86,8 @@ export default {
         route.travels.forEach(travel => {
           if (this.types.indexOf(travel.car_type) >= 0) {
             var entry_time = travel.records[0].time;
-            var day = entry_time.getUTCDay();
-            var hour = entry_time.getUTCHours();
+            var day = entry_time.getDay();
+            var hour = entry_time.getHours();
             //console.log(day, hour);
             raw_data[day][hour  ] ++;
           }
@@ -113,7 +113,7 @@ export default {
           polar: {},
           tooltip: {
             formatter: d => {
-              return this.days[d.data[0]] + " " + this.hours[d.data[0]] + ": " + d.data[2]
+              return this.days[d.data[0]] + " " + this.hours[12-d.data[1] >= 0? 12-d.data[1]: 36-d.data[1]] + ": " + d.data[2]
             }
           },
           visualMap: {

@@ -88,7 +88,7 @@ export default {
             routes.forEach(route => {
               route.travels.forEach(travel => {
                 if (this.types.indexOf(travel.car_type) >= 0) {
-                  var entry_time = travel.records[0].timestamp
+                  var entry_time = travel.records[0].time
                   if (entry_time >= time && entry_time < time + dayTime) {
                     counter ++
                   }

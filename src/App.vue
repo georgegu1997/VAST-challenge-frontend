@@ -16,7 +16,7 @@
           <b-dropdown-item to="/mc1-decision-tree">Pattern Decision Tree</b-dropdown-item>
         </b-nav-item-dropdown>
         <b-nav-item-dropdown text="Mini Challenge 2">
-          <b-dropdown-item to="/">View Routes</b-dropdown-item>
+          <b-dropdown-item to="/mc2-radar-plot">Radar Plot</b-dropdown-item>
         </b-nav-item-dropdown>
         <b-nav-item-dropdown text="Mini Challenge 3">
           <b-dropdown-item to="/mc3-parallel">Parallel Coordinates</b-dropdown-item>

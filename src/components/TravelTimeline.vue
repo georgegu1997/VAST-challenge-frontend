@@ -101,7 +101,7 @@ export default {
       }
       //console.log(this.travels);
       this.travels.sort(function(a, b) {
-        return a.records[0].timestamp - b.records[0].timestamp
+        return a.records[0].time - b.records[0].time
       })
 
       //console.log(this.travels);
