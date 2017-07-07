@@ -14,11 +14,15 @@ export default {
       type: Array,
       default:[]
     },
-    types: {
-      type: Array,
-    },
     car_type_color_set: {
       type: Object
+    },
+    car_type_concerned: {
+      type: Array
+    },
+    hover_route: {
+      type: Object,
+      default: null
     }
   },
   data() {
@@ -33,15 +37,38 @@ export default {
   },
   watch: {
     routes: function(newVal, oldVal) {
+      //console.log(this.car_type_concerned);
       //console.log(newVal);
       if (this.routes.length > 0){
         this.initData()
         this.transformData()
         this.drawTimeline()
+      }else {
+        this.timeline.clear()
       }
     },
-    types: function(newVal, oldVal) {
-      //console.log(newVal);
+    car_type_concerned: function(newVal, oldVal) {
+      //console.log(this.car_type_concerned);
+      if (this.car_type_concerned.length > 0){
+        this.initData()
+        this.transformData()
+        this.drawTimeline()
+      }else {
+        this.timeline.clear()
+      }
+    },
+    hover_route: function(newVal, oldVal) {
+      if (newVal) {
+        this.initData()
+        this.transformData()
+        this.drawTimeline()
+      }else if (this.car_type_concerned.length > 0) {
+        this.initData()
+        this.transformData()
+        this.drawTimeline()
+      }else {
+        this.timeline.clear()
+      }
     }
   },
   mounted() {
@@ -56,12 +83,22 @@ export default {
       this.data = [];
     },
     transformData() {
+      if (this.hover_route) {
+        var routes = [this.hover_route]
+      }else {
+        var routes = this.routes
+      }
 
-      this.routes.forEach(route => {
+      routes.forEach(route => {
         route.travels.forEach(travel => {
-          this.travels.push(travel);
+          if (this.car_type_concerned.indexOf(travel.car_type) >= 0){
+            this.travels.push(travel);
+          }
         })
       })
+      if (this.travels.length <= 0) {
+        return
+      }
       //console.log(this.travels);
       this.travels.sort(function(a, b) {
         return a.records[0].timestamp - b.records[0].timestamp
@@ -143,6 +180,10 @@ export default {
       };
     },
     drawTimeline() {
+      if (this.travels.length <= 0) {
+        this.timeline.clear()
+        return
+      }
       this.option = {
           tooltip: {
               formatter: function (params) {
@@ -216,7 +257,7 @@ export default {
       }
 
       this.timeline.on("click", params => {
-        console.log(params)
+        //console.log(params)
         this.$emit('setTravel', params.name)
       })
     }

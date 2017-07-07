@@ -23,6 +23,10 @@ export default {
     },
     car_type_concerned: {
       type: Array
+    },
+    hover_route: {
+      type: Object,
+      default: null,
     }
   },
   watch: {
@@ -35,12 +39,16 @@ export default {
       this.drawBarChart()
     },
     car_type_color_set: function(newVal, oldVal) {
-      console.log(newVal);
+      //console.log(newVal);
       this.transfromColorSet()
     },
     car_type_concerned: function(newVal, oldVal) {
       this.transformOpacitySet()
-      console.log(this.opacity_set);
+      //console.log(this.opacity_set);
+      this.drawBarChart()
+    },
+    hover_route: function(newVal, oldVal) {
+      this.transformData()
       this.drawBarChart()
     }
   },
@@ -108,7 +116,14 @@ export default {
     transformData() {
       var that = this;
       this.type_counter = this.initCounter()
-      this.routes.forEach(function(route) {
+
+      //console.log(this.hover_route);
+      if (this.hover_route) {
+        var routes = [this.hover_route]
+      }else {
+        var routes = this.routes
+      }
+      routes.forEach(function(route) {
         route.travels.forEach(function(travel) {
           that.type_counter[travel.car_type] += 1;
         })
@@ -239,7 +254,7 @@ export default {
           })
           .attr("opacity", d => {
             opacity_counter ++;
-            console.log(this.opacity_set);
+            //console.log(this.opacity_set);
             return this.opacity_set[opacity_counter - 1];
           })
 

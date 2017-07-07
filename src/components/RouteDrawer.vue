@@ -262,11 +262,17 @@ export default {
         .attr("stroke-width", "1.5")
         .attr("fill", "transparent")
 
+      var that = this
+
       //set lisiener for hovering
       route_group_m.on("mouseover", function(d, i) {
         d3.select(this).style("opacity", 1)
+        that.$emit("hoverRoute", d)
+        //console.log(d);
       }).on("mouseout", function(d, i) {
         d3.select(this).style("opacity", 0.3)
+        //console.log("mouseout");
+        that.$emit("hoverRoute", null)
       })
     }
   }
@@ -277,7 +283,7 @@ export default {
 <style> /* set the CSS */
 .path {
   fill: none;
-  stroke-width: 5px
+  stroke-width: 7px
 }
 
 .gate-group text {

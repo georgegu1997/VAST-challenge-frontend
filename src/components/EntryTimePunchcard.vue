@@ -16,6 +16,10 @@ export default {
     },
     types: {
       type: Array,
+    },
+    hover_route: {
+      type: Object,
+      default: null
     }
   },
   data() {
@@ -38,6 +42,10 @@ export default {
       this.drawPunchcard()
     },
     types: function(newVal, oldVal) {
+      this.transformData()
+      this.drawPunchcard()
+    },
+    hover_route: function(newVal, oldVal) {
       this.transformData()
       this.drawPunchcard()
     }
@@ -68,8 +76,13 @@ export default {
           }
       }
 
+      if (this.hover_route) {
+        var routes = [this.hover_route]
+      }else {
+        var routes = this.routes
+      }
       //console.log(raw_data);
-      this.routes.forEach(route => {
+      routes.forEach(route => {
         route.travels.forEach(travel => {
           if (this.types.indexOf(travel.car_type) >= 0) {
             var entry_time = travel.records[0].time;

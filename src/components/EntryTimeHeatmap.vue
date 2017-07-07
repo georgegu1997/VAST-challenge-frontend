@@ -16,6 +16,10 @@ export default {
     },
     types: {
       type: Array
+    },
+    hover_route: {
+      type: Object,
+      default: null
     }
   },
   data() {
@@ -36,6 +40,10 @@ export default {
     types: function(newVal, oldVal) {
       this.transformData()
       this.drawHeatmap()
+    },
+    hover_route: function(newVal, oldVal) {
+      this.transformData()
+      this.drawHeatmap()
     }
   },
   mounted() {
@@ -52,7 +60,11 @@ export default {
   },
   methods: {
     transformData() {
-      var routes = this.routes
+      if (this.hover_route) {
+        var routes = [this.hover_route]
+      }else {
+        var routes = this.routes
+      }
       var max = this.max = 0
       var total = 0
 

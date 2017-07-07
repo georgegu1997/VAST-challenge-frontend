@@ -45,7 +45,32 @@
               </div>
             </div>
             <div class="image-parallel row">
+              <div class="col">
+                <br>
+                <h2>
+                  Want to do parallel coordinates here, With each coordinate representing the selected band of each picture. 
+                  <br />And via selection on the coordinates, the corresponding pixels will be marked
+                  on the pictures
+                </h2>
+                <h3>
+                  problem:
 
+                </h3>
+                <h4>
+                  The number of pixels is too big: 650*650 ~= 400,000
+                </h4>
+                <h3>
+                  possible solutions:
+                </h3>
+                <h4>
+                  1. Change the 650*650 pictures to 65*65 pictures
+                </h4>
+                <h4>
+                  2. Reduce the distinct values of each band of each pictures. (e.g. (250,255) all regarded as 250)
+                    And the total number of lines in the parallel coordinates will drop.
+                    Also we can use color to note the number of ocurrences of each line.
+                </h4>
+              </div>
             </div>
           </div>
         </div>
