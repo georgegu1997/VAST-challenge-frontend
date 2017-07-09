@@ -1,7 +1,7 @@
 <template>
   <div class="root container-fluid">
     <div class="row main">
-      <div class="col-md-2 left-panel">
+      <div class="col-md-3 left-panel">
         <div class="card">
           <div class="card-header">
             Chemical Selection
@@ -24,16 +24,30 @@
           </div>
           <div class="card-block">
             <div class="sensor_select">
-              <div v-for="location, index in SENSOR_LOCATION">
-                <h5>
-                  <input type="checkbox" :id="'checkbox-sensor-'+index" :value="index"
-                  v-model="selected_sensor">
-                  <label :for="'checkbox-sensor-'+index">
-                    Sensor {{index + 1}}
-                  </label>
-                </h5>
+              <div class="row">
+                <div v-for="location, index in SENSOR_LOCATION" class="col-md-6">
+                  <h5>
+                    <input type="checkbox" :id="'checkbox-sensor-'+index" :value="index"
+                    v-model="selected_sensor">
+                    <label :for="'checkbox-sensor-'+index">
+                      Sensor {{index + 1}}
+                    </label>
+                  </h5>
+                </div>
               </div>
             </div>
+          </div>
+          <div class="card-header">
+            Divide by Month
+          </div>
+          <div class="card-block">
+            <sensor-reading-bar
+            :SORTED_SENSOR_DATA="SORTED_SENSOR_DATA"
+            :selected_chem="selected_chem"
+            :selected_sensor="selected_sensor"
+            :TIME_INTERVAL="TIME_INTERVAL"
+            :FULL_CHEM_NAME="FULL_CHEM_NAME">
+            </sensor-reading-bar>
           </div>
         </div>
       </div>
@@ -55,13 +69,17 @@
           </div>
         </div>
       </div>
-      <div class="col-md-3 right-panel">
+      <div class="col-md-2 right-panel">
         <div class="card">
           <div class="card-header">
             Reading Plot
           </div>
           <div class="card-block">
-
+            <sensor-reading-punchcard
+            :SORTED_SENSOR_DATA="SORTED_SENSOR_DATA"
+            :selected_chem="selected_chem"
+            :selected_sensor="selected_sensor">
+            </sensor-reading-punchcard>
           </div>
         </div>
       </div>
@@ -73,16 +91,20 @@
 import * as d3 from 'd3'
 import * as echarts from 'echarts'
 import vueSlider from 'vue-slider-component'
+import SensorReadingPunchcard from "./SensorReadingPunchcard"
+import SensorReadingBar from "./SensorReadingBar"
 
 export default {
   name: "mc2-base",
   components: {
-    vueSlider
+    vueSlider,
+    SensorReadingPunchcard,
+    SensorReadingBar
   },
   data() {
     return {
       SENSOR_DATA: [],
-      SORTED_SENSOR_DATA: {},
+      SORTED_SENSOR_DATA: [],
       WIND_DATA:[],
       FULL_CHEM_NAME: {
           "A": "Appluimonia",
@@ -139,7 +161,7 @@ export default {
       },
       NUMBER_OF_SECTOR: 40,
       POLAR_RADIUS: 80,
-      selected_chem: [],
+      selected_chem: ["A"],
       selected_sensor: [0,1,2,3,4,5,6,7,8],
       date_selection_data:[],
       date_range_str: []
@@ -150,7 +172,7 @@ export default {
     this.genDateSelectionData()
     this.calculateConstant()
     this.drawStatic()
-    //console.log(this.TIME_INTERVAL)
+    console.log(this.TIME_INTERVAL)
     //this.refreshSlider()
     //console.log(this.date_selection_data);;
   },
@@ -234,8 +256,8 @@ export default {
       var months = ["Apr", "Aug", "Dec"]
       months.forEach(key => {
         var range = this.TIME_INTERVAL[key]
-        var start = range["start"]
-        var end = range["end"]
+        var start = new Date(range["start"].getTime())
+        var end = new Date(range["end"].getTime())
         //console.log(start, end);
 
         for (var date = start; date < end; date.setDate(date.getDate() + 1)) {
