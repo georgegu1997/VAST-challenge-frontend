@@ -1,7 +1,7 @@
 <template>
   <div class="root container-fluid">
     <div class="row main">
-      <div class="col-md-3 left-panel">
+      <div class="col-md-2 left-panel">
         <div class="card">
           <div class="card-header">
             Chemical Selection
@@ -51,21 +51,34 @@
           </div>
         </div>
       </div>
-      <div class="col-md-7 middle-panel">
+      <div class="col-md-8 middle-panel">
         <div class="card">
           <div class="card-header">
             Radar Plot
           </div>
           <div class="card-block">
+            <div class="line-chart row">
+              <reading-line-chart
+              :SORTED_SENSOR_DATA="SORTED_SENSOR_DATA"
+              :selected_chem="selected_chem"
+              :selected_sensor="selected_sensor"
+              :TIME_INTERVAL="TIME_INTERVAL"
+              :FULL_CHEM_NAME="FULL_CHEM_NAME"
+              v-on:changeDateRange="changeDateRange"
+              v-on:timeHover="hoverOnTime">
+              ></reading-line-chart>
+            </div>
             <div class="polar-plot">
 
             </div>
+            <!--
             <hr />
             <div class="date-slider">
               <vue-slider v-bind:data="date_selection_data"
               :value="date_range_str" :lazy="true"
               @callback="updateDateRange"></vue-slider>
             </div>
+            -->
           </div>
         </div>
       </div>
@@ -93,13 +106,15 @@ import * as echarts from 'echarts'
 import vueSlider from 'vue-slider-component'
 import SensorReadingPunchcard from "./SensorReadingPunchcard"
 import SensorReadingBar from "./SensorReadingBar"
+import ReadingLineChart from "./ReadingLineChart"
 
 export default {
   name: "mc2-base",
   components: {
     vueSlider,
     SensorReadingPunchcard,
-    SensorReadingBar
+    SensorReadingBar,
+    ReadingLineChart
   },
   data() {
     return {
@@ -163,16 +178,17 @@ export default {
       POLAR_RADIUS: 80,
       selected_chem: ["A"],
       selected_sensor: [0,1,2,3,4,5,6,7,8],
-      date_selection_data:[],
-      date_range_str: []
+      //date_selection_data:[],
+      //date_range_str: [],
+      date_range: [new Date(2016,3,1), new Date(2017,0,1)]
     }
   },
   mounted() {
     this.read_data()
-    this.genDateSelectionData()
+    //this.genDateSelectionData()
     this.calculateConstant()
     this.drawStatic()
-    console.log(this.TIME_INTERVAL)
+    //console.log(this.TIME_INTERVAL)
     //this.refreshSlider()
     //console.log(this.date_selection_data);;
   },
@@ -184,8 +200,16 @@ export default {
     selected_sensor: function(newVal, oldVal) {
       this.changeSensorSelection()
     },
+    /*
     date_range_str: function(newVal, oldVal) {
       //console.log(newVal);
+      if (this.SENSOR_DATA && this.WIND_DATA && this.SENSOR_DATA.length > 0 && this.WIND_DATA.length > 0) {
+        this.transformData()
+        this.drawPolarPlots()
+      }
+    },
+    */
+    date_range: function(newVal, oldVal) {
       if (this.SENSOR_DATA && this.WIND_DATA && this.SENSOR_DATA.length > 0 && this.WIND_DATA.length > 0) {
         this.transformData()
         this.drawPolarPlots()
@@ -205,6 +229,7 @@ export default {
         if (error) {
           console.error(error);
         }
+        //console.log(sensor_data);
 
         sensor_data.forEach(record => {
           record.time = new Date(record.time)
@@ -240,6 +265,7 @@ export default {
       //console.log(sorted);
       this.SORTED_SENSOR_DATA = sorted
     },
+    /*
     get_date_range() {
       var value = []
       //console.log(this.date_range_str);
@@ -251,6 +277,39 @@ export default {
       })
       return value;
     },
+    */
+    changeDateRange(range) {
+      //console.log(range);
+      this.date_range = range
+    },
+    hoverOnTime(time) {
+      console.log(time);
+      var wind_record = this.WIND_DATA.find(record => record.time.getTime() === time.getTime())
+      console.log(wind_record);
+      var angle = 360.0 / this.NUMBER_OF_SECTOR
+      var path_i = Math.floor(wind_record.direction / angle)
+      /*
+      this.sensor_m.each(function(datum, i, j) {
+        var elem = d3.select(this)
+        var segment = elem.selectAll("path")
+          .attr("transform", (d, i) => {
+            if (path_i === i) {
+              return "scale(5)"
+            }
+          })
+          .attr("opacity", (d,i) => {
+            if (path_i !== i) {
+              return "0.3"
+            }
+          })
+          .transition()
+          .duration(800)
+          .attr("transform", "scale(1)")
+          .attr("opacity", "1")
+      })
+      */
+    },
+    /*
     genDateSelectionData() {
       var date_selection_data = []
       var months = ["Apr", "Aug", "Dec"]
@@ -268,12 +327,14 @@ export default {
       this.date_range_str = ["16-04-01", "16-12-31"]
       //console.log(date_selection_data);
     },
+
     updateDateRange(value) {
       //console.log(value);
       this.date_range_str = value
     },
+    */
     calculateConstant() {
-      this.WINDOW_MARGIN = 10
+      this.WINDOW_MARGIN = 15
       this.WINDOW_LEFT_MAP_X = 62 - this.WINDOW_MARGIN
       this.WINDOW_RIGHT_MAP_X = 120 + this.WINDOW_MARGIN
       this.WINDOW_TOP_MAP_Y = 45 + this.WINDOW_MARGIN
@@ -323,7 +384,7 @@ export default {
     },
     transformData() {
       var records_by_sensor = []
-      var date_range = this.get_date_range()
+      var date_range = this.date_range
       var angle = 360.0 / this.NUMBER_OF_SECTOR
       var radius_arr = []
       //console.log(this.WIND_DATA, this.SENSOR_DATA);
@@ -430,6 +491,24 @@ export default {
         .attr("class", "sensor-text")
         .attr("dy", this.POLAR_RADIUS + 10)
         .attr("text-anchor", "middle")
+
+      sensor_m.on("mouseover", function(d,i) {
+        //console.log("mouseover this");
+        d3.select(this)
+          .transition()
+          .duration(500)
+          .attr("transform", "translate(" + that.x_scale(d.location[0])  + "," + that.y_scale(d.location[1])  + ")" + "scale(2)")
+      })
+
+      sensor_m.on("mouseout", function(d,i) {
+        //console.log("mouseover this");
+        d3.select(this)
+          .transition()
+          .duration(500)
+          .attr("transform", "translate(" + that.x_scale(d.location[0])  + "," + that.y_scale(d.location[1])  + ")" + "scale(1)")
+      })
+
+      this.sensor_m = sensor_m
 
       sensor_m.each(function(datum, i, j) {
         //console.log(this);
@@ -540,5 +619,8 @@ export default {
   transform: scale(0.5) translateX(-50%) translateY(-50%);;
 }
 
-
+.middle-panel .card .card-block {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
 </style>

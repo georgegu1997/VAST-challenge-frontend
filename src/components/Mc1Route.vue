@@ -19,7 +19,7 @@
             <div v-for="pattern in PATTERNS" class="pattern" v-if="!search_result || search_result.length === 0">
               <p>
               <b-btn v-b-toggle="'collapse-pattern-'+pattern.name" class="pattern-toggle-button">
-                {{pattern.name}}</b-btn>
+                {{pattern.name}} ({{pattern.count}})</b-btn>
               </p>
               <b-collapse :id="'collapse-pattern-'+pattern.name">
                 <b-card>
@@ -33,7 +33,9 @@
                 </b-card>
               </b-collapse>
             </div>
-            <div v-if="search_result && search_result.length >= 0">
+            <div v-if="search_result && search_result.length > 0">
+              <h5>Total Routes: {{search_result.length}}</h5>
+              <h5>Total Entries: {{search_result_length}}</h5>
               <div v-for="route in search_result" class="route"
               v-on:click="toggleRoute(route)"
               v-bind:style="{color: route.selected_color}">
@@ -244,7 +246,8 @@ export default {
         "2P": "2 axles truck (with permission)"
       },
       search_text: "",
-      search_result: []
+      search_result: [],
+      search_result_length: 0
     }
   },
   mounted() {
@@ -261,7 +264,9 @@ export default {
 
       // construct the Date() object for every record
       patterns.forEach(pattern => {
+        pattern.count = 0
         pattern.routes.forEach(route => {
+          pattern.count += route.travels.length
           route.travels.forEach(travel => {
             travel.records.forEach(record => {
               record.time = new Date(record.timestamp)
@@ -324,6 +329,7 @@ export default {
     },
     searchRouteByGate() {
       this.search_result = []
+      this.search_result_length = 0
       if (!this.search_text || this.search_text.length === 0) {
         return
       }
@@ -359,6 +365,9 @@ export default {
         })
       })
 
+      this.search_result.forEach(route => {
+        this.search_result_length += route.travels.length
+      })
       //console.log(this.search_result);
     }
   }

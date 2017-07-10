@@ -26,7 +26,7 @@ export default {
         "name": "All routes",
         "children": [
           {
-            "name": "Start or end at ranger-base -> Ranger",
+            "name": "Passing ranger-base -> Ranger",
           },
           {
             "name": "Not pass ranger-base",

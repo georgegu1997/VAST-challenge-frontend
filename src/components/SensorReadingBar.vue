@@ -84,7 +84,7 @@ export default {
               }
             })
           })
-          console.log(counter);
+          //console.log(counter);
           series_data.push(counter)
         })
         this.series.push({
@@ -94,7 +94,7 @@ export default {
           data: series_data
         })
       }
-      console.log(this.series);
+      //console.log(this.series);
     },
     drawBarChart() {
       var months = ["Apr", "Aug", "Dec"]
@@ -109,7 +109,7 @@ export default {
               position: 'top',
               axisPointer : {            // 坐标轴指示器，坐标轴触发有效
                   type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-              }
+              },
           },
           legend: {
               data: chems_legend
