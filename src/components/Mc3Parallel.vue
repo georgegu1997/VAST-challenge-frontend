@@ -45,10 +45,11 @@
               </div>
             </div>
             <div class="image-parallel row">
+              <!--
               <div class="col">
                 <br>
                 <h2>
-                  Want to do parallel coordinates here, With each coordinate representing the selected band of each picture. 
+                  Want to do parallel coordinates here, With each coordinate representing the selected band of each picture.
                   <br />And via selection on the coordinates, the corresponding pixels will be marked
                   on the pictures
                 </h2>
@@ -71,6 +72,7 @@
                     Also we can use color to note the number of ocurrences of each line.
                 </h4>
               </div>
+              -->
             </div>
           </div>
         </div>
@@ -80,6 +82,9 @@
 </template>
 
 <script>
+import * as d3 from 'd3'
+import * as echarts from 'echarts'
+import * as math from 'mathjs'
 
 export default {
   name:'mc-3-parallel',
@@ -99,6 +104,7 @@ export default {
           'image11_2016_09_06',
           'image12_2016_12_19'
       ],
+      IMAGE_LIST: [],
       image_selected: [],
       BAND_LIST: [
         'B1',
@@ -130,6 +136,23 @@ export default {
       return list
     }
   },
+  mounted() {
+    var that = this
+
+    /*
+    d3.queue()
+      .defer(d3.json, "static/data/images.json")
+      .await(load_data)
+
+    function load_data(error, image_data) {
+      image_data.forEach(image_obj => {
+        image_obj.image = math.matrix(image_obj.image)
+      })
+      console.log(image_data);
+      that.IMAGE_LIST = image_data
+    }
+    */
+  }
 }
 </script>
 

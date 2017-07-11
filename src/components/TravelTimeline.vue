@@ -192,10 +192,6 @@ export default {
                     + "exit at:" + echarts.format.formatTime('yy-MM-dd hh:mm', params.value[2])
               }
           },
-          title: {
-              text: 'Timeline',
-              left: 'center'
-          },
           dataZoom: [{
               type: 'slider',
               filterMode: 'weakFilter',
@@ -229,12 +225,14 @@ export default {
               }
           },
           yAxis: {
-              data: new Array(this.categories.length),
+              //data: new Array(this.categories.length),
+              /*
               axisLabel: {
                 formatter: val => {
                   return ""
                 }
               }
+              */
           },
           series: [{
               type: 'custom',

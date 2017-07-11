@@ -232,7 +232,7 @@ export default {
 
       g.selectAll(".serie").remove()
 
-      g.selectAll(".serie")
+      var series = g.selectAll(".serie")
         .data(stack.keys(["two_axles", "two_axles_pass", "three_axles", "four_axles"])(data))
         .enter().append("g")
           .attr("class", "serie")
@@ -242,21 +242,30 @@ export default {
           })
         .selectAll("rect")
         .data(function(d) { return d; })
-        .enter().append("rect")
-          .attr("x", function(d) { return x(d.data.type); })
-          .attr("y", function(d) { return y(d[1]); })
-          .attr("height", function(d) { return y(d[0]) - y(d[1]); })
-          .attr("width", x.bandwidth())
-          .attr("fill", d => {
-            //console.log(d);
-            color_counter ++;
-            return this.color_set[color_counter - 1];
-          })
-          .attr("opacity", d => {
-            opacity_counter ++;
-            //console.log(this.opacity_set);
-            return this.opacity_set[opacity_counter - 1];
-          })
+        .enter()
+
+      series.append("rect")
+        .attr("x", function(d) { return x(d.data.type); })
+        .attr("y", function(d) { return y(d[1]); })
+        .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+        .attr("width", x.bandwidth())
+        .attr("fill", d => {
+          //console.log(d);
+          color_counter ++;
+          return this.color_set[color_counter - 1];
+        })
+        .attr("opacity", d => {
+          opacity_counter ++;
+          //console.log(this.opacity_set);
+          return this.opacity_set[opacity_counter - 1];
+        })
+
+      series.append("text")
+        .text(d => (d[1] - d[0]) === 0 ? "": (d[1] - d[0]))
+        .attr("x", function(d) { return x(d.data.type) + x.bandwidth()/2; })
+        .attr("y", function(d) { return y(d[1]) + 15; })
+        .attr("fill", "#ffffff")
+        .attr("text-anchor", "middle")
 
       g.select(".axis--y").remove()
 

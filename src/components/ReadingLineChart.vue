@@ -216,7 +216,7 @@ export default {
 
 <style scoped>
 #reading-line-chart {
-  height: 500px;
+  height: 300px;
   width: 100%;
   margin: 0;
 }
