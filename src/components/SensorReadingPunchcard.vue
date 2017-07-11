@@ -144,7 +144,10 @@ export default {
               orient: 'horizontal',
               left: 'center',
               bottom: '10%',
-              precision: 3
+              precision: 3,
+              inRange: {
+                color: ['#ccffcc', '#eac736', '#d94e5d']
+              }
           },
           series: [{
               name: 'Punch Card',

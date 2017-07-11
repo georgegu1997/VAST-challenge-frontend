@@ -12,6 +12,8 @@
   "dependencies": {
     "bootstrap-vue": "^0.16.1",
     "echarts": "^3.6.2",
+    "d3": "^4.0.0",
+    "d3-punchcard": "^1.0.0",
     "json-loader": "^0.5.4",
     "vue": "^2.3.3",
     "vue-range-slider": "^0.2.4",

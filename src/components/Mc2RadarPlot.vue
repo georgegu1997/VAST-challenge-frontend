@@ -68,8 +68,14 @@
               v-on:timeHover="hoverOnTime">
               ></reading-line-chart>
             </div>
-            <div class="polar-plot">
+            <h4>Average Reading Along Different Wind Direction</h4>
+            <div class="row">
+              <div class="polar-plot">
 
+              </div>
+              <div class="visual-map" id="visual-map">
+
+              </div>
             </div>
             <!--
             <hr />
@@ -265,19 +271,6 @@ export default {
       //console.log(sorted);
       this.SORTED_SENSOR_DATA = sorted
     },
-    /*
-    get_date_range() {
-      var value = []
-      //console.log(this.date_range_str);
-      this.date_range_str.forEach(str => {
-        if (str) {
-          var date_splits = str.split("-")
-          value.push(new Date('20'+date_splits[0], (date_splits[1] - 1).toString(), date_splits[2]))
-        }
-      })
-      return value;
-    },
-    */
     changeDateRange(range) {
       //console.log(range);
       this.date_range = range
@@ -309,30 +302,6 @@ export default {
       })
       */
     },
-    /*
-    genDateSelectionData() {
-      var date_selection_data = []
-      var months = ["Apr", "Aug", "Dec"]
-      months.forEach(key => {
-        var range = this.TIME_INTERVAL[key]
-        var start = new Date(range["start"].getTime())
-        var end = new Date(range["end"].getTime())
-        //console.log(start, end);
-
-        for (var date = start; date < end; date.setDate(date.getDate() + 1)) {
-          date_selection_data.push(echarts.format.formatTime('YY-MM-dd', date))
-        }
-      })
-      this.date_selection_data = date_selection_data
-      this.date_range_str = ["16-04-01", "16-12-31"]
-      //console.log(date_selection_data);
-    },
-
-    updateDateRange(value) {
-      //console.log(value);
-      this.date_range_str = value
-    },
-    */
     calculateConstant() {
       this.WINDOW_MARGIN = 15
       this.WINDOW_LEFT_MAP_X = 62 - this.WINDOW_MARGIN
@@ -381,6 +350,9 @@ export default {
         .attr("dy", "-0.75em")
         .style("font-size", 20)
         .text(function(d) { return d.name; });
+
+      var dom = document.getElementById("visual-map")
+      this.visual_map = echarts.init(dom)
     },
     transformData() {
       var records_by_sensor = []
@@ -459,11 +431,29 @@ export default {
         }
       }
 
+      this.visual_map.setOption({
+        visualMap: {
+            min: 0,
+            max: max_reading,
+            text:['High','Low'],
+            realtime: false,
+            calculable: true,
+            top: 'center',
+            left: '0%',
+            precision: 3,
+            inRange: {
+                color: ['#ccffcc','#eac736', '#d94e5d']
+            }
+        },
+        series: []
+      })
+
       //console.log(max_reading);
 
       var color = d3.scaleLinear()
-        .domain([0, max_reading])
-        .range([ d3.rgb('#FFF500'), d3.rgb("#007AFF")])
+        .domain([0, max_reading/2.0, max_reading])
+        //.range([ d3.rgb('#FFF500'), d3.rgb("#007AFF")])
+        .range([d3.rgb('#ccffcc'), d3.rgb('#eac736'), d3.rgb('#d94e5d')])
 
       //console.log(data);
 
@@ -509,6 +499,9 @@ export default {
       })
 
       this.sensor_m = sensor_m
+      var circle_scale = d3.scaleLinear()
+        .domain([0, max_reading])
+        .range([0, this.POLAR_RADIUS*1.5])
 
       sensor_m.each(function(datum, i, j) {
         //console.log(this);
@@ -517,15 +510,18 @@ export default {
         var extent = d3.extent(datum.radius, d => d)
         var range = [0, extent[1]]
         var formatNumber = d3.format(".2");
+        var r = circle_scale(extent[1])
         //console.log(elem);
 
         var x = d3.scaleLinear()
           .domain(range)
           .range([0, -that.POLAR_RADIUS])
+          //.range([0, -r])
 
         var bar_scale = d3.scaleLinear()
           .domain(range)
           .range([0, that.POLAR_RADIUS])
+          //.range([0, r])
 
         var xAxis = d3.axisLeft(x)
           .tickFormat(formatNumber)
@@ -578,6 +574,7 @@ export default {
         elem.selectAll(".outer-frame").remove()
         elem.append("circle")
           .attr("r", that.POLAR_RADIUS)
+          //.attr("r", r)
           .classed("outer", true)
           .style("fill", "none")
           .style("stroke", "black")
@@ -610,8 +607,13 @@ export default {
   text-align: left;
 }
 
+.visual-map {
+  height: 936px;
+  width: 100px;
+}
+
 .polar-plot {
-  height: 800px;
+  height: 936px;
   text-align: center;
 }
 

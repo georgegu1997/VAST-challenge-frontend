@@ -129,7 +129,10 @@ export default {
               calculable: true,
               orient: 'vertical',
               left: '0',
-              top: 'center'
+              top: 'center',
+              inRange: {
+                  color: ['#ccffcc', '#eac736', '#d94e5d']
+              },
           },
 
           calendar: [

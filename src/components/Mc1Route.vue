@@ -23,6 +23,12 @@
               </p>
               <b-collapse :id="'collapse-pattern-'+pattern.name">
                 <b-card>
+                  <div class="pattern-select-all">
+                    <button class="btn btn-primary"
+                    v-on:click="selectAll(pattern.routes)"
+                    >Select All</button>
+                  </div>
+                  <hr />
                   <div v-for="route in pattern.routes" class="route"
                   v-on:click="toggleRoute(route)"
                   v-bind:style="{color: route.selected_color}">
@@ -294,11 +300,26 @@ export default {
         r.selected_color = this.color(i)
       })
     },
+    selectAll(routes) {
+      //console.log("selectAll");
+      var routes_to_push = []
+      routes.forEach(route => {
+        var index = this.selected_routes.indexOf(route)
+        if(index < 0) {
+          routes_to_push.push(route)
+        }
+      })
+      this.selected_routes = this.selected_routes.concat(routes_to_push)
+      this.selected_routes.forEach((r, i) => {
+        r.selected_color = this.color(i)
+      })
+    },
     clearSeletcedRoutes() {
       this.selected_routes.forEach(route => {
         route.selected_color = "#000000"
       })
       this.selected_routes = []
+      this.selected_travel = undefined
     },
     searchTravel(car_id) {
       //console.log(this.PATTERNS);

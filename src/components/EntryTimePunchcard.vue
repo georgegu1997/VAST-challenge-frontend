@@ -122,7 +122,11 @@ export default {
               calculable: true,
               orient: 'horizontal',
               left: 'center',
-              top: 'top'
+              top: 'top',
+              inRange: {
+                  color: ['#ccffcc', '#eac736', '#d94e5d']
+              },
+              width:300
           },
           angleAxis: {
               type: 'category',

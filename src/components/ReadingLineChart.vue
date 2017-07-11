@@ -1,5 +1,13 @@
 <template>
   <div class="root">
+    <h4>Reading Line Chart</h4>
+    <p>
+      Mode:
+      <input type="radio" id="mode-select-sensor" value="sensor" v-model="mode">
+      <label for="mode-select-sensor">Sensor</label>
+      <input type="radio" id="mode-select-chem" value="chem" v-model="mode">
+      <label for="mode-select-chem">Chemical</label>
+    </p>
     <div class="row" id="reading-line-chart">
 
     </div>
@@ -55,6 +63,10 @@ export default {
         this.transformData()
         this.drawLineChart()
       }
+    },
+    mode: function(newVal, oldVal) {
+      this.transformData()
+      this.drawLineChart()
     }
   },
   mounted() {
@@ -143,9 +155,6 @@ export default {
       }
 
       this.option = {
-          title: {
-              text: 'Reading Line Chart'
-          },
           tooltip: {
               trigger: 'axis'
           },
