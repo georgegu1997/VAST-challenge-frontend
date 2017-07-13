@@ -125,13 +125,23 @@
                   ></route-drawer>
                 </div>
                 <div class="row">
-                  <div class="col-md-6">
+                  <div class="col-md-8">
+                    <h6>Staying Time Distribution</h6>
+                    <duration-histogram
+                    v-bind:routes="selected_routes"
+                    v-bind:hover_route="hover_route"
+                    v-bind:types="car_type_concerned"
+                    v-on:StayingTimeSelected="setStayingTimeRange"
+                    ></duration-histogram>
+                  </div>
+                  <div class="col-md-4">
                     <h6>Car Type Distribution</h6>
                     <car-type-bar
                     v-bind:routes="selected_routes"
                     v-bind:types="car_type_concerned"
                     v-bind:car_type_color_set="car_type_color_set"
                     v-bind:car_type_concerned="car_type_concerned"
+                    v-bind:staying_time_range="staying_time_range"
                     v-bind:hover_route="hover_route"
                     ></car-type-bar>
                   </div>
@@ -143,6 +153,7 @@
                   <entry-time-heatmap
                   v-bind:routes="selected_routes"
                   v-bind:hover_route="hover_route"
+                  v-bind:staying_time_range="staying_time_range"
                   v-bind:types="car_type_concerned"
                   ></entry-time-heatmap>
                 </div>
@@ -150,6 +161,7 @@
                   <entry-time-punchcard
                   v-bind:routes="selected_routes"
                   v-bind:hover_route="hover_route"
+                  v-bind:staying_time_range="staying_time_range"
                   v-bind:types="car_type_concerned"
                   ></entry-time-punchcard>
                 </div>
@@ -187,6 +199,7 @@
             v-bind:car_type_concerned="car_type_concerned"
             v-bind:car_type_color_set="car_type_color_set"
             v-bind:hover_route="hover_route"
+            v-bind:staying_time_range="staying_time_range"
             v-on:setTravel="setDetailedTravel"
             ></travel-timeline>
           </div>
@@ -208,12 +221,14 @@
 
 <script>
 import * as d3 from 'd3'
+import * as _ from "lodash"
 import RouteDrawer from './RouteDrawer'
 import CarTypeBar from './CarTypeBar'
 import EntryTimeHeatmap from './EntryTimeHeatmap'
 import EntryTimePunchcard from "./EntryTimePunchcard"
 import TravelTimeline from "./TravelTimeline"
 import TravelDetail from "./TravelDetail"
+import DurationHistogram from "./DurationHistogram"
 
 export default {
   name: 'mc-1-route',
@@ -223,7 +238,8 @@ export default {
     EntryTimeHeatmap,
     EntryTimePunchcard,
     TravelTimeline,
-    TravelDetail
+    TravelDetail,
+    DurationHistogram
   },
   data() {
     return {
@@ -253,7 +269,8 @@ export default {
       },
       search_text: "",
       search_result: [],
-      search_result_length: 0
+      search_result_length: 0,
+      staying_time_range: [0, Infinity]
     }
   },
   mounted() {
@@ -285,6 +302,11 @@ export default {
       //console.log(that.PATTERNS);
     }
 
+  },
+  watch: {
+    selected_routes: function(newVal, oldVal) {
+      this.staying_time_range = [0, Infinity]
+    }
   },
   methods: {
     toggleRoute(route) {
@@ -348,6 +370,10 @@ export default {
       this.hover_route = route
       //console.log(route);
     },
+    setStayingTimeRange: _.debounce(function (range) {
+      console.log("call!", range);
+      this.staying_time_range = range
+    }, 100),
     searchRouteByGate() {
       this.search_result = []
       this.search_result_length = 0

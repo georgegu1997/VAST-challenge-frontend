@@ -23,6 +23,9 @@ export default {
     hover_route: {
       type: Object,
       default: null
+    },
+    staying_time_range: {
+      type: Array
     }
   },
   data() {
@@ -69,6 +72,19 @@ export default {
       }else {
         this.timeline.clear()
       }
+    },
+    staying_time_range: function(newVal, oldVal) {
+      if (newVal) {
+        this.initData()
+        this.transformData()
+        this.drawTimeline()
+      }else if (this.car_type_concerned.length > 0) {
+        this.initData()
+        this.transformData()
+        this.drawTimeline()
+      }else {
+        this.timeline.clear()
+      }
     }
   },
   mounted() {
@@ -92,7 +108,12 @@ export default {
       routes.forEach(route => {
         route.travels.forEach(travel => {
           if (this.car_type_concerned.indexOf(travel.car_type) >= 0){
-            this.travels.push(travel);
+            var entry_time = travel.records[0].time.getTime()
+            var exit_time = travel.records[travel.records.length - 2].time.getTime()
+            var minutes = (exit_time - entry_time) / 1000.0 / 60
+            if (minutes >= this.staying_time_range[0] && minutes <= this.staying_time_range[1]) {
+              this.travels.push(travel);
+            }
           }
         })
       })

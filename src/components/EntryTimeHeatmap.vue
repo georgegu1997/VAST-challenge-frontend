@@ -20,6 +20,9 @@ export default {
     hover_route: {
       type: Object,
       default: null
+    },
+    staying_time_range: {
+      type: Array
     }
   },
   data() {
@@ -42,6 +45,10 @@ export default {
       this.drawHeatmap()
     },
     hover_route: function(newVal, oldVal) {
+      this.transformData()
+      this.drawHeatmap()
+    },
+    staying_time_range: function(newVal, oldVal) {
       this.transformData()
       this.drawHeatmap()
     }
@@ -90,7 +97,11 @@ export default {
                 if (this.types.indexOf(travel.car_type) >= 0) {
                   var entry_time = travel.records[0].time
                   if (entry_time >= time && entry_time < time + dayTime) {
-                    counter ++
+                    var exit_time = travel.records[travel.records.length - 2].time.getTime()
+                    var minutes = (exit_time - entry_time.getTime()) / 1000.0 / 60
+                    if (minutes >= this.staying_time_range[0] && minutes <= this.staying_time_range[1]) {
+                      counter ++
+                    }
                   }
                 }
               })

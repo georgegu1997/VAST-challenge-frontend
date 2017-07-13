@@ -1,6 +1,6 @@
 <template>
   <div class="root">
-    <svg width="300" height="250" id="stacked-bar">
+    <svg width="200" height="250" id="stacked-bar">
     </svg>
   </div>
 </template>
@@ -27,6 +27,9 @@ export default {
     hover_route: {
       type: Object,
       default: null,
+    },
+    staying_time_range: {
+      type: Array
     }
   },
   watch: {
@@ -48,6 +51,10 @@ export default {
       this.drawBarChart()
     },
     hover_route: function(newVal, oldVal) {
+      this.transformData()
+      this.drawBarChart()
+    },
+    staying_time_range: function(newVal, oldVal) {
       this.transformData()
       this.drawBarChart()
     }
@@ -123,9 +130,15 @@ export default {
       }else {
         var routes = this.routes
       }
+
       routes.forEach(function(route) {
         route.travels.forEach(function(travel) {
-          that.type_counter[travel.car_type] += 1;
+          var entry_time = travel.records[0].time.getTime()
+          var exit_time = travel.records[travel.records.length - 2].time.getTime()
+          var minutes = (exit_time - entry_time) / 1000.0 / 60
+          if (minutes >= that.staying_time_range[0] && minutes <= that.staying_time_range[1]) {
+            that.type_counter[travel.car_type] += 1;
+          }
         })
       })
       this.stacked_counter[0]["two_axles"] = this.type_counter["1"]
