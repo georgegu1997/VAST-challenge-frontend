@@ -34,8 +34,8 @@ export default {
                 '5a', '4a', '3a', '2a', '1a',
                 '12a', '11p', '10p', '9p', '8p', '7p','6p',
                 '5p','4p', '3p', '2p', '1p'],
-      days : ['Sunday', 'Monday', 'Tuesday','Wednesday', 'Thursday',
-            'Friday', 'Saturday']
+      days : ['Monday', 'Tuesday','Wednesday', 'Thursday',
+            'Friday', 'Saturday','Sunday']
     }
   },
   watch: {
@@ -96,10 +96,10 @@ export default {
             var exit_time = travel.records[travel.records.length - 2].time.getTime()
             var minutes = (exit_time - entry_time.getTime()) / 1000.0 / 60
             if (minutes >= this.staying_time_range[0] && minutes <= this.staying_time_range[1]) {
-              var day = entry_time.getDay();
+              var day = (entry_time.getDay() - 1) === -1 ? 6: entry_time.getDay() - 1;
               var hour = entry_time.getHours();
               //console.log(day, hour);
-              raw_data[day][hour  ] ++;
+              raw_data[day][hour] ++;
             }
           }
         })
@@ -137,7 +137,7 @@ export default {
               inRange: {
                   color: ['#ccffcc', '#eac736', '#d94e5d']
               },
-              width:300
+              itemHeight: "250px"
           },
           angleAxis: {
               type: 'category',

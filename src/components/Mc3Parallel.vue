@@ -45,6 +45,18 @@
               </div>
             </div>
             <div class="image-parallel row">
+              <div v-for="(image_arr, index) in image_arrs"
+                v-bind:class="{
+                  'col-md-12': image_arrs.length <=1,
+                  'col-md-6': image_arrs.length === 2,
+                  'col-md-4': image_arrs.length === 3,
+                  'col-md-3': image_arrs.length >= 4,
+                }">
+                <image-band-histogram
+                :image_arr="image_arr"
+                :selected_band="selected_band_index"
+                ></image-band-histogram>
+              </div>
               <!--
               <div class="col">
                 <br>
@@ -85,9 +97,13 @@
 import * as d3 from 'd3'
 import * as echarts from 'echarts'
 import * as math from 'mathjs'
+import ImageBandHistogram from "./ImageBandHistogram"
 
 export default {
   name:'mc-3-parallel',
+  components: {
+    ImageBandHistogram
+  },
   data() {
     return {
       IMAGE_FILE_LIST: [
@@ -115,12 +131,53 @@ export default {
         'B6',
         'NDVI',
       ],
-      band_selected: 'B1'
+      band_selected: 'B1',
+      image_arrs: []
     }
   },
   watch: {
     image_selected: function(newVal, oldVal) {
       //console.log(this.image_selected);
+      var that = this
+      var loading = d3.queue()
+
+      if (newVal.length > oldVal.length) {
+        //console.log("here");
+        var index = newVal.length - 1
+
+        loading.defer(d3.json, "static/image_json/"+this.image_selected[index]+".json")
+          .await(function() {
+            if (arguments[0]) {
+              console.error(arguments[0]);
+            }
+            that.image_arrs.push(math.matrix(arguments[1]))
+          })
+      }else if (newVal.length < oldVal.length) {
+        for (var i = 0; i < oldVal.length; i ++) {
+          if(newVal.indexOf(oldVal[i]) < 0) {
+            that.image_arrs.splice(i, 1)
+          }
+        }
+      }else {
+        for (var i = 0; i < newVal.length; i ++) {
+          loading.defer(d3.json, "static/image_json/"+this.image_selected[i]+".json")
+        }
+        loading.await(loadImage)
+
+        function loadImage() {
+          that.image_arrs = []
+          if (arguments[0]) {
+            console.error(arguments[0]);
+          }
+
+          for (var i = 1; i < arguments.length; i ++) {
+            that.image_arrs.push(math.matrix(arguments[i]))
+          }
+
+        }
+      }
+
+      //console.log(that.image_arrs);
     },
     band_selected: function(newVal, oldVal) {
       console.log(this.band_selected);
@@ -134,6 +191,9 @@ export default {
       })
       //console.log(list);
       return list
+    },
+    selected_band_index: function() {
+      return this.BAND_LIST.indexOf(this.band_selected)
     }
   },
   mounted() {

@@ -25,11 +25,7 @@ export default {
   props: {
     routes: {
       type: Array,
-      default: [],
-      validator: function(d) {
-        //console.log(d);
-        return true
-      }
+      default: []
     }
   },
   watch: {

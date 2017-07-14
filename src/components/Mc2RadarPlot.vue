@@ -479,7 +479,8 @@ export default {
             precision: 3,
             inRange: {
                 color: ['#ccffcc','#eac736', '#d94e5d']
-            }
+            },
+            itemHeight: "350px"
         },
         series: []
       })

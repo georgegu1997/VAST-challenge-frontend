@@ -1,7 +1,7 @@
 <template>
-  <div class="root">
+  <div class="root container">
     <div class="row" v-if="travel">
-      <div class="col">
+      <div class="md-col-6">
         <h5>Vehicle ID: </h5>
         <p>
           {{travel.car_id}}
@@ -18,15 +18,25 @@
           {{record.gate_name}}
         </p>
       </div>
+      <div class="md-col-6">
+        <route-drawer-small
+        :records="travel.records.map(r => r.gate_name)"
+        :color="car_type_color_set[travel.car_type]"
+        ></route-drawer-small>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import * as echarts from "echarts"
+import RouteDrawerSmall from "./RouteDrawerSmall"
 
 export default {
   name: 'travel-detail',
+  components: {
+    RouteDrawerSmall
+  },
   props: {
     travel: {
       type: Object,

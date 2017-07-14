@@ -144,6 +144,7 @@ export default {
               inRange: {
                   color: ['#ccffcc', '#eac736', '#d94e5d']
               },
+              itemHeight: "300px"
           },
 
           calendar: [
