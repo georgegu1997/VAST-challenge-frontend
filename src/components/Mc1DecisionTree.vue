@@ -32,13 +32,21 @@ export default {
             "name": "Not pass ranger-base",
             "children":[
               {
-                "name": "Pass any of 'gate's -> Special"
+                "name": "Found some pass 'gate's but not 2P -> Special"
               },
               {
                 "name": "Not Pass any of 'gate's",
                 "children": [
                   {
-                    "name": "Has only one record at 'entrance's -> Incomplete"
+                    "name": "Has only one record at 'entrance's",
+                    "children": [
+                      {
+                        "name": "Enter the Preserve in the last month -> Incomplete"
+                      },
+                      {
+                        "name": "Found an entry staying for almost one year -> Special"
+                      }
+                    ]
                   },
                   {
                     "name": "Has two records at 'entrance's",
@@ -50,7 +58,7 @@ export default {
                             "name":"Enter and exit at the same 'entrance' -> Same Exntrance"
                           },
                           {
-                            "name": "Has some special activity -> Special"
+                            "name": "Found some special activity -> Special"
                           },
                           {
                             "name": "Other normal entries -> Passing By"

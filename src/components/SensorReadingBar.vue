@@ -107,9 +107,23 @@ export default {
           tooltip : {
               trigger: 'axis',
               position: 'top',
-              axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-                  type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+              axisPointer : {
+                  type : 'shadow'
               },
+              formatter: function(params) {
+                //console.log(params);
+                if (params && params.length > 0){
+                  var text = params[0].axisValueLabel
+                  for (var i = 0; i < params.length; i ++) {
+                    var data = params[i]
+                    text += "<br />" + data.seriesName + ": " + data.value.toFixed(2)
+                  }
+                  return text
+                }else {
+                  return ""
+                }
+
+              }
           },
           legend: {
               data: chems_legend
@@ -130,8 +144,16 @@ export default {
           series: this.series
       }
 
+
       if (this.option && typeof this.option === "object") {
           this.barchart.setOption(this.option, true);
+
+          this.barchart.on("click", params => {
+            if (params.componentSubType === "bar") {
+              console.log(params.name);
+              this.$emit("SelectMonth", params.name)
+            }
+          })
       }
     }
   }

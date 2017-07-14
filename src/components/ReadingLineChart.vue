@@ -1,7 +1,7 @@
 <template>
   <div class="root">
-    <h4>Reading Line Chart</h4>
     <p>
+      <span class="h4">Reading Line Chart &emsp;</span>
       Mode:
       <input type="radio" id="mode-select-sensor" value="sensor" v-model="mode">
       <label for="mode-select-sensor">Sensor</label>
@@ -37,6 +37,9 @@ export default {
     },
     TIME_INTERVAL: {
       type: Object
+    },
+    set_time_range: {
+      type: Array
     }
   },
   data() {
@@ -62,6 +65,18 @@ export default {
       if (newVal.length > 0) {
         this.transformData()
         this.drawLineChart()
+      }
+    },
+    set_time_range: function(newVal, oldVal) {
+      //console.log("change!");
+      if (this.option && typeof this.option === "object") {
+        //console.log(newVal);
+        this.linechart.dispatchAction({
+          type: 'dataZoom',
+          startValue: echarts.format.formatTime('YY-MM-dd hh:mm:ss', newVal[0]),
+          endValue: echarts.format.formatTime('YY-MM-dd hh:mm:ss', newVal[1])
+        })
+        this.$emit("changeDateRange", newVal)
       }
     },
     mode: function(newVal, oldVal) {
@@ -94,7 +109,7 @@ export default {
           return records[index+j].reading
         }
         if (records[index-j].time.getTime() === time.getTime()) {
-          return records[index+j].reading
+          return records[index-j].reading
         }
       }
       return 0
@@ -113,6 +128,7 @@ export default {
             var reading = 0
             this.selected_chem.forEach(chem_k => {
               var records = sensor_records[chem_k]
+              console.log(time);
               reading += this.getReadingByIndexAndTime(records, time, i)
             })
             data.push([echarts.format.formatTime('YY-MM-dd hh:mm:ss', time ), reading])
@@ -184,11 +200,6 @@ export default {
           this.linechart.hideLoading()
 
           this.linechart.on("datazoom", params => {
-            //console.log("datazoom");
-            //console.log(params);
-            //console.log(this.time_data.length * params.batch[0].start / 100);
-            //console.log(this.time_data.length * params.batch[0].end / 100);
-
             if (params.batch) {
               this.$emit("changeDateRange", [
                 this.time_data[Math.floor((this.time_data.length-1) * params.batch[0].start / 100.0)],
@@ -200,14 +211,13 @@ export default {
                 this.time_data[Math.floor((this.time_data.length-1) * params.end / 100.0)]
               ])
             }
-
           });
 
+          /*
           this.linechart.on("mouseover", params => {
-            //console.log("mouseover");
-            //console.log(params);
             this.$emit("timeHover", this.time_data[params.dataIndex])
           })
+          */
       }
     }
   }

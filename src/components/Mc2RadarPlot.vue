@@ -38,7 +38,7 @@
             </div>
           </div>
           <div class="card-header">
-            Divide by Month
+            Month Bar Chart
           </div>
           <div class="card-block">
             <sensor-reading-bar
@@ -46,12 +46,41 @@
             :selected_chem="selected_chem"
             :selected_sensor="selected_sensor"
             :TIME_INTERVAL="TIME_INTERVAL"
-            :FULL_CHEM_NAME="FULL_CHEM_NAME">
+            :FULL_CHEM_NAME="FULL_CHEM_NAME"
+            v-on:SelectMonth="SetTImeRangeMonth">
             </sensor-reading-bar>
           </div>
         </div>
       </div>
-      <div class="col-md-8 middle-panel">
+      <div class="col-md-3 right-panel">
+        <div class="card">
+          <div class="card-header">
+            Reading Plot
+          </div>
+          <div class="card-block">
+            <sensor-reading-punchcard
+            :SORTED_SENSOR_DATA="SORTED_SENSOR_DATA"
+            :selected_chem="selected_chem"
+            :selected_sensor="selected_sensor">
+            </sensor-reading-punchcard>
+          </div>
+          <div class="card-header">
+            Calendar View
+          </div>
+          <div class="card-block">
+            <reading-calendar
+            :SORTED_SENSOR_DATA="SORTED_SENSOR_DATA"
+            :TIME_INTERVAL="TIME_INTERVAL"
+            :FULL_CHEM_NAME="FULL_CHEM_NAME"
+            :selected_chem="selected_chem"
+            :selected_sensor="selected_sensor"
+            :month_k="selected_month"
+            v-on:SetDate="setDate"
+            ></reading-calendar>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-7 middle-panel">
         <div class="card">
           <div class="card-header">
             Radar Plot
@@ -64,6 +93,7 @@
               :selected_sensor="selected_sensor"
               :TIME_INTERVAL="TIME_INTERVAL"
               :FULL_CHEM_NAME="FULL_CHEM_NAME"
+              :set_time_range="set_time_range"
               v-on:changeDateRange="changeDateRange"
               v-on:timeHover="hoverOnTime">
               ></reading-line-chart>
@@ -88,20 +118,6 @@
           </div>
         </div>
       </div>
-      <div class="col-md-2 right-panel">
-        <div class="card">
-          <div class="card-header">
-            Reading Plot
-          </div>
-          <div class="card-block">
-            <sensor-reading-punchcard
-            :SORTED_SENSOR_DATA="SORTED_SENSOR_DATA"
-            :selected_chem="selected_chem"
-            :selected_sensor="selected_sensor">
-            </sensor-reading-punchcard>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -113,6 +129,7 @@ import vueSlider from 'vue-slider-component'
 import SensorReadingPunchcard from "./SensorReadingPunchcard"
 import SensorReadingBar from "./SensorReadingBar"
 import ReadingLineChart from "./ReadingLineChart"
+import ReadingCalendar from "./ReadingCalendar"
 
 export default {
   name: "mc2-base",
@@ -120,7 +137,8 @@ export default {
     vueSlider,
     SensorReadingPunchcard,
     SensorReadingBar,
-    ReadingLineChart
+    ReadingLineChart,
+    ReadingCalendar
   },
   data() {
     return {
@@ -184,9 +202,11 @@ export default {
       POLAR_RADIUS: 80,
       selected_chem: ["A"],
       selected_sensor: [0,1,2,3,4,5,6,7,8],
+      selected_month: "Apr",
       //date_selection_data:[],
       //date_range_str: [],
-      date_range: [new Date(2016,3,1), new Date(2017,0,1)]
+      date_range: [new Date(2016,3,1), new Date(2017,0,1)],
+      set_time_range: [new Date(2016,3,1), new Date(2016,11,31,23)]
     }
   },
   mounted() {
@@ -216,6 +236,7 @@ export default {
     },
     */
     date_range: function(newVal, oldVal) {
+      console.log(newVal);
       if (this.SENSOR_DATA && this.WIND_DATA && this.SENSOR_DATA.length > 0 && this.WIND_DATA.length > 0) {
         this.transformData()
         this.drawPolarPlots()
@@ -275,6 +296,21 @@ export default {
       //console.log(range);
       this.date_range = range
     },
+    setDate(date) {
+      var start_time = new Date(this.TIME_INTERVAL[this.selected_month].start)
+      start_time.setDate(start_time.getDate() + date - 1)
+      var end_time = new Date(start_time)
+      end_time.setHours(23)
+      this.set_time_range = [start_time, end_time]
+    },
+    SetTImeRangeMonth(month_k) {
+      var start_time = new Date(this.TIME_INTERVAL[month_k].start)
+      var end_time = new Date(this.TIME_INTERVAL[month_k].end)
+      end_time.setHours(end_time.getHours() - 1)
+      //console.log(start_time, end_time);
+      this.set_time_range = [start_time, end_time]
+      this.selected_month = month_k
+    },
     hoverOnTime(time) {
       console.log(time);
       var wind_record = this.WIND_DATA.find(record => record.time.getTime() === time.getTime())
@@ -303,7 +339,7 @@ export default {
       */
     },
     calculateConstant() {
-      this.WINDOW_MARGIN = 15
+      this.WINDOW_MARGIN = 8
       this.WINDOW_LEFT_MAP_X = 62 - this.WINDOW_MARGIN
       this.WINDOW_RIGHT_MAP_X = 120 + this.WINDOW_MARGIN
       this.WINDOW_TOP_MAP_Y = 45 + this.WINDOW_MARGIN
@@ -482,6 +518,7 @@ export default {
         .attr("dy", this.POLAR_RADIUS + 10)
         .attr("text-anchor", "middle")
 
+      /*
       sensor_m.on("mouseover", function(d,i) {
         //console.log("mouseover this");
         d3.select(this)
@@ -497,6 +534,7 @@ export default {
           .duration(500)
           .attr("transform", "translate(" + that.x_scale(d.location[0])  + "," + that.y_scale(d.location[1])  + ")" + "scale(1)")
       })
+      */
 
       this.sensor_m = sensor_m
       var circle_scale = d3.scaleLinear()
@@ -608,12 +646,12 @@ export default {
 }
 
 .visual-map {
-  height: 936px;
+  height: 750px;
   width: 100px;
 }
 
 .polar-plot {
-  height: 936px;
+  height: 750px;
   text-align: center;
 }
 

@@ -24,7 +24,7 @@ export default {
     selected_sensor: {
       type: Array,
       default: []
-    }
+    },
   },
   data() {
     return {
@@ -104,7 +104,7 @@ export default {
       for (var d = 0; d < 7; d ++) {
         for (var h = 0; h < 24; h ++) {
           //console.log(raw_data[d]);
-          this.data.push([d, h, raw_data[d][h] / (raw_counter[d][h] === 0? 1: raw_counter[d][h])])
+          this.data.push([h, d, raw_data[d][h] / (raw_counter[d][h] === 0? 1: raw_counter[d][h])])
         }
       }
 
@@ -120,17 +120,17 @@ export default {
           },
           animation: false,
           grid: {
-              height: '80%',
+              height: '70%',
               y: '0'
           },
-          xAxis: {
+          yAxis: {
               type: 'category',
               data: this.days,
               splitArea: {
                   show: true
               }
           },
-          yAxis: {
+          xAxis: {
               type: 'category',
               data: this.hours,
               splitArea: {
@@ -143,7 +143,7 @@ export default {
               calculable: true,
               orient: 'horizontal',
               left: 'center',
-              bottom: '10%',
+              bottom: '0%',
               precision: 3,
               inRange: {
                 color: ['#ccffcc', '#eac736', '#d94e5d']
@@ -162,7 +162,7 @@ export default {
           }],
           tooltip: {
             formatter: d => {
-              return this.days[d.data[0]] + " " + this.hours[d.data[1]] + ": " + d.data[2]
+              return this.days[d.data[1]] + " " + this.hours[d.data[0]] + ": " + d.data[2]
             }
           },
       };
@@ -178,7 +178,7 @@ export default {
 
 <style scoped>
 #reading-punchcard {
-  height: 600px;
+  height: 250px;
   width: 100%;
   margin: 0;
 }
