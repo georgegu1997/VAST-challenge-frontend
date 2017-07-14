@@ -1,6 +1,14 @@
 <template>
   <div class="root container">
-    <h5 style="text-align: center">Average Reading Punchcard</h5>
+    <h5 style="text-align: center">Average Reading Punchcard
+      <span v-if="!all_time_interval">({{selected_month}})</span>
+    <span class="h6">
+      <input type="checkbox" id="all-time-select" value="true"
+      v-model="all_time_interval">
+      <label :for="'checkbox-chem-'+chem_k">
+        All time
+      </label>
+    </span></h5>
     <div class="row" id="reading-punchcard">
 
     </div>
@@ -25,6 +33,13 @@ export default {
       type: Array,
       default: []
     },
+    selected_month: {
+      type: String,
+      default: "All"
+    },
+    TIME_INTERVAL: {
+      type: Object
+    }
   },
   data() {
     return {
@@ -37,7 +52,8 @@ export default {
         '6p', '7p', '8p', '9p', '10p', '11p'],
       days : ['Sun', 'Mon', 'Tue','Wed', 'Thurs',
         'Fri', 'Sat'],
-      mode: "reading"
+      mode: "reading",
+      all_time_interval: true
     }
   },
   watch: {
@@ -53,6 +69,19 @@ export default {
     },
     SORTED_SENSOR_DATA: function(newVal, oldVal) {
       if (newVal.length > 0) {
+        this.transformData()
+        this.drawPunchcard()
+      }
+    },
+    selected_month: function(newVal, oldVal) {
+      if (this.SORTED_SENSOR_DATA.length > 0) {
+        this.transformData()
+        this.drawPunchcard()
+      }
+    },
+    all_time_interval: function(newVal, oldVal) {
+      console.log(newVal);
+      if (this.SORTED_SENSOR_DATA.length > 0) {
         this.transformData()
         this.drawPunchcard()
       }
@@ -72,6 +101,13 @@ export default {
     transformData() {
       var raw_data = new Array();
       var raw_counter = new Array();
+      if (this.all_time_interval) {
+        var start = -Infinity
+        var end = Infinity
+      }else {
+        var start = this.TIME_INTERVAL[this.selected_month].start
+        var end = this.TIME_INTERVAL[this.selected_month].end
+      }
 
       for(var i=0; i<7; i++)
       {
@@ -88,13 +124,15 @@ export default {
         this.selected_chem.forEach(chem_k => {
           var records = this.SORTED_SENSOR_DATA[sensor_k][chem_k]
           records.forEach(record => {
-            var day = record.time.getDay()
-            var hour = record.time.getHours()
-            if (this.mode === "reading") {
-              raw_data[day][hour] += record.reading;
-              raw_counter[day][hour] += 1;
-            }else {
-              console.error("mode error");
+            if (record.time >= start && record.time < end) {
+              var day = record.time.getDay()
+              var hour = record.time.getHours()
+              if (this.mode === "reading") {
+                raw_data[day][hour] += record.reading;
+                raw_counter[day][hour] += 1;
+              }else {
+                console.error("mode error");
+              }
             }
           })
         })

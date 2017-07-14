@@ -61,7 +61,9 @@
             <sensor-reading-punchcard
             :SORTED_SENSOR_DATA="SORTED_SENSOR_DATA"
             :selected_chem="selected_chem"
-            :selected_sensor="selected_sensor">
+            :selected_sensor="selected_sensor"
+            :TIME_INTERVAL="TIME_INTERVAL"
+            :selected_month="selected_month">
             </sensor-reading-punchcard>
           </div>
           <div class="card-header">
@@ -387,6 +389,16 @@ export default {
         .style("font-size", 20)
         .text(function(d) { return d.name; });
 
+      this.tooltip = d3.select("body")
+        .append("div")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .style("visibility", "hidden")
+        .style("color", "#ffffff")
+        .style("background-color", "#000000")
+        .style("padding", "3px")
+        .style("border-radius", "3px")
+
       var dom = document.getElementById("visual-map")
       this.visual_map = echarts.init(dom)
     },
@@ -609,6 +621,22 @@ export default {
             var i = d3.interpolate(d.outerRadius, bar_scale(+d.value));
             return function(t) { d.outerRadius = i(t); return arc(d,index); };
           });
+
+        segment_m.on("mouseover", function(d,i) {
+          //console.log(d);
+          d3.select(this).style("fill", "#ff0000")
+          return that.tooltip.style("top",(d3.event.pageY-10)+"px")
+                        .style("left",(d3.event.pageX+10)+"px")
+                        .style("visibility", "visible")
+                        .text("Average Reading: " + d.value.toFixed(3))
+        })
+        segment_m.on("mouseout", function(d,i) {
+          d3.select(this)
+            .transition()
+            .duration(250)
+            .style("fill", d => color(d.value));
+          return that.tooltip.style("visibility", "hidden")
+        })
 
         elem.selectAll(".outer-frame").remove()
         elem.append("circle")
