@@ -176,8 +176,9 @@ export default {
 
         }
       }
-
-      //console.log(that.image_arrs);
+    },
+    image_arrs: function(newVal, oldVal) {
+      console.log("parent:",newVal);
     },
     band_selected: function(newVal, oldVal) {
       console.log(this.band_selected);

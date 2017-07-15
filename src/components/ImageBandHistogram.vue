@@ -33,13 +33,16 @@ export default {
   },
   methods: {
     drawHistogram() {
-      //console.log(this.image_arr, this.selected_band);
-      var data = this.image_arr.subset(math.index([0,650], [0,650], this.selected_band))
-      //console.log(data);
-      data = data.resize([651*651])
-      console.log(data);
+      console.log(this.image_arr, this.selected_band);
+      var raw_data = []
 
-      var bins = ecStat.histogram(data._data);
+      for (var i = 0; i < 651; i ++) {
+        for (var j = 0; j < 651; j++) {
+          raw_data.push(this.image_arr._data[i][j][this.selected_band])
+        }
+      }
+
+      var bins = ecStat.histogram(raw_data);
       console.log(bins);
 
       var interval;

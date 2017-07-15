@@ -238,7 +238,7 @@ export default {
     },
     */
     date_range: function(newVal, oldVal) {
-      console.log(newVal);
+      //console.log(newVal);
       if (this.SENSOR_DATA && this.WIND_DATA && this.SENSOR_DATA.length > 0 && this.WIND_DATA.length > 0) {
         this.transformData()
         this.drawPolarPlots()
@@ -314,29 +314,21 @@ export default {
       this.selected_month = month_k
     },
     hoverOnTime(time) {
-      console.log(time);
+      var that = this
+      //console.log(time);
       var wind_record = this.WIND_DATA.find(record => record.time.getTime() === time.getTime())
-      console.log(wind_record);
+      //console.log(wind_record);
       var angle = 360.0 / this.NUMBER_OF_SECTOR
       var path_i = Math.floor(wind_record.direction / angle)
+
       /*
       this.sensor_m.each(function(datum, i, j) {
         var elem = d3.select(this)
         var segment = elem.selectAll("path")
-          .attr("transform", (d, i) => {
-            if (path_i === i) {
-              return "scale(5)"
-            }
-          })
-          .attr("opacity", (d,i) => {
-            if (path_i !== i) {
-              return "0.3"
-            }
-          })
+          .style("fill", "#ff0000")
           .transition()
-          .duration(800)
-          .attr("transform", "scale(1)")
-          .attr("opacity", "1")
+          .duration(500)
+          .style("fill", d => that.color(d.value));
       })
       */
     },
@@ -504,6 +496,7 @@ export default {
         //.range([ d3.rgb('#FFF500'), d3.rgb("#007AFF")])
         .range([d3.rgb('#ccffcc'), d3.rgb('#eac736'), d3.rgb('#d94e5d')])
 
+      this.color = color
       //console.log(data);
 
       var sensors = this.svg.selectAll(".sensors")

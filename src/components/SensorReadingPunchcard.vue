@@ -5,7 +5,7 @@
     <span class="h6">
       <input type="checkbox" id="all-time-select" value="true"
       v-model="all_time_interval">
-      <label :for="'checkbox-chem-'+chem_k">
+      <label for="all-time-select">
         All time
       </label>
     </span></h5>

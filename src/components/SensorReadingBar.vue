@@ -150,7 +150,7 @@ export default {
 
           this.barchart.on("click", params => {
             if (params.componentSubType === "bar") {
-              console.log(params.name);
+              //console.log(params.name);
               this.$emit("SelectMonth", params.name)
             }
           })
