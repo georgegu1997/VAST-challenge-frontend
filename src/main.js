@@ -31,10 +31,12 @@ const router = new VueRouter({
       path: '/mc2-radar-plot',
       component: Mc2RadarPlot
     },
+    /*
     {
       path: '/mc3-parallel',
       component: Mc3Parallel,
     },
+    */
     {
       path:'/',
       redirect: '/mc1-route',

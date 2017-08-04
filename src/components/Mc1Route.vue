@@ -299,7 +299,7 @@ export default {
       })
 
       that.PATTERNS = patterns
-      //console.log(that.PATTERNS);
+      console.log(that.PATTERNS);
     }
 
   },
