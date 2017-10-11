@@ -1,6 +1,9 @@
-# vast-front
+# This is a Visualiztaion System for VAST Challenge 2017 by HKUST team
 
-> test for VASt Challenge frontend
+This system was done in July, 2017.
+And we have received Multi-Challenge Award for Compelling Synthesis of Information.
+Our submssion and detailed analysis and viewed in: http://hcil2.cs.umd.edu/newvarepository/benchmarks.php
+System online demo link: https://georgegu1997.github.io/VAST-challenge-frontend/
 
 ## Build Setup
 
@@ -13,9 +16,3 @@ npm run dev
 
 # build for production with minification
 npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-```
-
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
